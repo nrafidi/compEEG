@@ -1,0 +1,42 @@
+% EEGLAB history file generated on the 23-Jun-2015
+% ------------------------------------------------
+
+EEG = pop_biosig('/Users/nrafidi/Documents/MATLAB/CompEEG-data/CompEEG_C.bdf');
+EEG.setname='CompEEG_C';
+EEG = eeg_checkset( EEG );
+EEG = pop_loadset('filename','CompEEG_C.set','filepath','/Users/nrafidi/Documents/MATLAB/CompEEG-data/');
+EEG = eeg_checkset( EEG );
+pop_eegplot( EEG, 1, 1, 1);
+pop_eegplot( EEG, 1, 0, 1);
+EEG.setname='CompEEG_C_Vis';
+EEG = pop_loadset('filename','CompEEG_C_Vis.set','filepath','/Users/nrafidi/Documents/MATLAB/CompEEG-data/');
+EEG = eeg_checkset( EEG );
+EEG = pop_eegfiltnew(EEG, 1, 200, 1690, 0, [], 1);
+EEG.setname='CompEEG_C_Vis_BP1-200';
+EEG = eeg_checkset( EEG );
+EEG = pop_eegfiltnew(EEG, 55, 65, 846, 1, [], 1);
+EEG.setname='CompEEG_C_Vis_BP1-200_Notch60';
+EEG = eeg_checkset( EEG );
+EEG = pop_reref( EEG, []);
+EEG.setname='CompEEG_C_Vis_BP1-200_Notch60_Ref';
+EEG = pop_loadset('filename','CompEEG_C_Vis_BP1-200_Notch60_Ref.set','filepath','/Users/nrafidi/Documents/MATLAB/CompEEG-data/');
+EEG = eeg_checkset( EEG );
+EEG = pop_epoch( EEG, {  }, [-1  1], 'newname', 'CompEEG_C_Vis_BP1-200_Notch60_Ref_epochs', 'epochinfo', 'yes');
+EEG = eeg_checkset( EEG );
+EEG = pop_rmbase( EEG, [-300    0]);
+EEG = eeg_checkset( EEG );
+EEG = eeg_checkset( EEG );
+EEG = pop_runica(EEG, 72);
+EEG = eeg_checkset( EEG );
+EEG = pop_eegthresh(EEG,0,[1:72] ,-75,75,-0.3,0.998,0,0);
+EEG = eeg_checkset( EEG );
+EEG = pop_rejtrend(EEG,0,[1:72] ,1024,50,0.3,0,0);
+EEG = eeg_checkset( EEG );
+EEG = pop_jointprob(EEG,0,[1:72] ,20,5,0,0);
+EEG = eeg_rejsuperpose( EEG, 0, 1, 1, 1, 1, 1, 1, 1);
+EEG = pop_rejepoch( EEG, [67 99 132 144 186] ,0);
+EEG = eeg_checkset( EEG );
+pop_eegplot( EEG, 0, 1, 1);
+EEG = pop_subcomp( EEG, [1  2], 0);
+EEG = pop_loadset('filename','CompEEG_C_Vis_BP1-200_Notch60_Ref_epochs_blink.set','filepath','/Users/nrafidi/Documents/MATLAB/CompEEG-data/');
+EEG = eeg_checkset( EEG );
