@@ -10,7 +10,11 @@ KRanswer = importdata('/Users/nrafidi/Documents/MATLAB/compEEG-stim/KR_answer.tx
 
 for s = 1:numSub
     sub = subjects(s);
-    load([fResPrefix sub '_itemTraj.mat']);
+    load([fResPrefix sub '_itemTraj_LR.mat']);
+    
+    if max(itemTraj) > 1
+        itemTraj = exp(itemTraj)./(1 + exp(itemTraj));
+    end
     
     subAnswers = KRsubanswer(s+1,:);
     numQ = length(subAnswers);

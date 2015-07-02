@@ -1,9 +1,9 @@
 %% Input Parameters
 
 % Subject ID
-sub = 'E';
+sub = 'C';
 % Experiment Name
-exp = 'CompEEG_KR'; %alt: CompEEG_KR
+exp = 'CompEEG'; %alt: CompEEG_KR
 % Path to data files
 dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/';
 % High Pass Filter
@@ -47,7 +47,7 @@ EEG = eeg_checkset( EEG );
 EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
 
 % Re-reference the electrodes to the group mean
-EEG = pop_reref( EEG, [],'exclude',[65:72] );
+EEG = pop_reref( EEG, [],'exclude',[63 65:72] );
 EEG.setname=[EEG.setname '_Ref'];
 EEG = eeg_checkset( EEG );
 EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
@@ -78,6 +78,7 @@ if strcmp(exp, 'CompEEG')
     if sub < 'F'
         [data, labels, time] = getDataLabels_pilot(EEG);
     else
+        [data, labels, time] = getDataLabels_Comp(EEG);
     end
 else
     [data, labels, time] = getDataLabels_KR(EEG);

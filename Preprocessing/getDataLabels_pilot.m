@@ -16,7 +16,7 @@ for i = 1:numEpochs
     if iscell(epochInfo(i).eventtype)
         epochInfo(i).eventtype = epochInfo(i).eventtype{1};
     end
-    if firstInstSeen
+    if fourthInstSeen
         label = str2num(epochInfo(i).eventtype);%#ok<*ST2NM>
         
 %         keyboard;

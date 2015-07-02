@@ -1,0 +1,48 @@
+function [ Weights ] = GradDesc(Obs_X_Features, Obs_X_Labels, lambda, regBias)
+
+    [numObservations, numFeatures] = size(Obs_X_Features);
+    numLabels = size(Obs_X_Labels, 2);
+    step = 1e-2;
+    eps = 1e-4;
+       
+    if (regBias)
+        Weights = zeros(numFeatures, numLabels - 1);
+    else
+        Weights = zeros(numFeatures + 1, numLabels - 1);
+    end
+    
+    times = 1;
+    tr = -1;
+        
+    while (true)
+
+        prediction = LogPredict(Obs_X_Features, Weights, regBias);
+        pred_err = (Obs_X_Labels - prediction);
+        tr_prev = tr;
+        tr = norm(pred_err);
+        
+        if tr < tr_prev
+            step = step*1.1;
+        else
+            step = step*0.1;
+        end
+        
+        if(times > 1 && abs(tr - tr_prev) < eps)
+            break;
+        end
+            
+        times = times + 1;
+        
+        if (~regBias)
+            Weights(numFeatures + 1, :) = Weights(numFeatures + 1, :) + step*sum(pred_err(:, 1:(size(pred_err, 2) - 1)));
+        end
+        
+        for indexLabelComponent = 1:size(Weights, 2)
+            pred_err_j = repmat(squeeze(pred_err(:,indexLabelComponent)), 1, numFeatures);
+            Weights(1:numFeatures,indexLabelComponent) = Weights(1:numFeatures,indexLabelComponent) ...
+                + step*sum(Obs_X_Features.*pred_err_j, 1)' - step*lambda*Weights(1:numFeatures,indexLabelComponent);
+        end
+        
+    end
+    
+end
