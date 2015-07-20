@@ -2,13 +2,13 @@
 % data
 addpath ./logisticRegression/
 
-subjects = 'C';
+subjects = 'CDEHILOP';
 numSub = length(subjects);
 numFolds = 5;
 % numFeats = 1:10:500;
 doZ = 1;
 fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/CompEEG_';
-fSuffix = '_Features.mat';
+fSuffix = '_Features_Less.mat';
 
 subAccs = nan(numSub, numFolds);
 subModels = cell(numSub, numFolds);
@@ -62,6 +62,13 @@ for s = 1:length(subjects)
         subProbs{s, f} = P;
         subConf{s, f} = subProbs{s,f}(Yhat ~= Y(testInds), 1);
     end
+    
+    subAcc = subAccs(s,:);
+    subModel = subModels(s,:);
+    subFold = subFolds{s};
+    
+    save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' sub '_Less.mat'],...
+        'subAcc', 'subModel', 'subFold');
     
 end
 

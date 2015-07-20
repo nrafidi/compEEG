@@ -3,9 +3,9 @@
 % Parameters
 erpWinSize = 50;%ms
 specWinSize = 200;%ms
-specStartFreq = 4;%Hz, Theta
-specEndFreq = 8;%Hz, Theta
-subjects = 'C';
+specStartFreq = [4, 9, 13];%Hz, Theta
+specEndFreq = [8, 12, 20];%Hz, Theta
+subjects = 'CDEHILOP';
 exp = 'CompEEG';
 dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
 
@@ -19,10 +19,10 @@ for s = 1:numSub
     [numSamp, numChan, ~] = size(data);
     
     minTime = min(time(time >= 0));
-    maxTime = max(time);
+    maxTime = 800;%max(time);
     
     erpWin = minTime:erpWinSize:maxTime;
-    specWin = minTime:erpWinSize:maxTime;
+    specWin = minTime:specWinSize:maxTime;
     
     numErp = length(erpWin);
     numSpec = length(specWin);
@@ -36,17 +36,19 @@ for s = 1:numSub
     end
     
     for p = 2:numSpec
-        spec = (time >= specWin(e-1)) & (time < specWin(e));
-        newData = [];
-        for n = 1:numSamp
-            dataToTrans = squeeze(data(n,:,spec));
-            trans = abs(fft(dataToTrans'));
-            freqData = mean(trans(specStartFreq:specEndFreq, :));
-            newData = cat(1, newData, freqData);
+        for sp = 1:length(specStartFreq)
+            spec = (time >= specWin(p-1)) & (time < specWin(p));
+            newData = [];
+            for n = 1:numSamp
+                dataToTrans = squeeze(data(n,:,spec));
+                trans = abs(fft(dataToTrans'));
+                freqData = mean(trans(specStartFreq(sp):specEndFreq(sp), :));
+                newData = cat(1, newData, freqData);
+            end
+            featData = cat(2, featData, newData);
         end
-        featData = cat(2, featData, newData);
     end
     
-    save([dataRoot exp '_' sub '_Features.mat'], 'featData', 'labels', 'erpWin', 'specWin');
+    save([dataRoot exp '_' sub '_Features_Less.mat'], 'featData', 'labels', 'erpWin', 'specWin');
     
 end

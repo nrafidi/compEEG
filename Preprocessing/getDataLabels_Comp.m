@@ -13,8 +13,11 @@ for i = 1:numEpochs
     if iscell(epochInfo(i).eventtype)
         epochInfo(i).eventtype = epochInfo(i).eventtype{1};
     end
-    label = str2num(epochInfo(i).eventtype);%#ok<*ST2NM>
-    
+    if isstr(epochInfo(i).eventtype)
+        label = str2num(epochInfo(i).eventtype);%#ok<*ST2NM>
+    else
+        label = epochInfo(i).eventtype;
+    end
     if (label > labelStart) && (label ~= 255)
         labelInds(i) = true;
         stimLabels(i, 2) = label;
@@ -29,7 +32,8 @@ end
 labels = stimLabels(labelInds, :);
 data = EEG.data(:,:,labelInds);
 data = permute(data, [3 1 2]);
-data = data(:, 1:64, :);
+numChan = size(data, 2);
+data = data(:, 1:(numChan - 8), :);
 time = EEG.times;
 
 end

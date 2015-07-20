@@ -1,7 +1,8 @@
 %% Input Parameters
-
+clear EEG;
+% clc;
 % Subject ID
-sub = 'C';
+% sub = 'Q';
 % Experiment Name
 exp = 'CompEEG'; %alt: CompEEG_KR
 % Path to data files
@@ -31,12 +32,13 @@ EEG=pop_chanedit(EEG, 'load',{[dataRoot 'electrode_locs.xyz'] 'filetype' 'xyz'},
 EEG = eeg_checkset( EEG );
 % Plot them to make sure they're correct
 % figure; topoplot([],EEG.chanlocs, 'style', 'blank',  'electrodes', 'labelpoint', 'chaninfo', EEG.chaninfo);
-EEG = pop_saveset( EEG, 'filename',[exp '_' sub '_Vis_Locs.set'],'filepath',[dataRoot '/preproc-partial/']);
+EEG.setname=[EEG.setname '_Locs'];
+EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
 EEG = eeg_checkset( EEG );
 
 % Band Pass Filter
 EEG = pop_eegfiltnew(EEG, HP, LP, 846, 0, [], 1);
-EEG.setname=[exp '_' sub '_Vis_Locs_BP' num2str(LP) '-' num2str(HP)];
+EEG.setname=[EEG.setname '_BP' num2str(LP) '-' num2str(HP)];
 EEG = eeg_checkset( EEG );
 EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
 
