@@ -1,7 +1,18 @@
 function [data, labels, time] = getDataLabels_KR(EEG)
+% getDataLabels_Comp: converts the eeglab data structure EEG into a more
+% workable format. Designed for CompEEG__KR.
+%
+% Inputs:
+%   EEG: the data structure to be converted
+%
+% Outputs:
+%   data: the data as a double array of size samples x channels x time
+%   labels: the labels for the data
+%   time: a vector corresponding the time dimension of data with
+%   stimulus-relative timepoints
 
+% Extract the epochs
 epochInfo = EEG.epoch;
-
 numEpochs = length(epochInfo);
 
 labelInds = false(numEpochs, 1);

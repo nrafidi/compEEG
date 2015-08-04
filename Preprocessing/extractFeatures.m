@@ -1,54 +1,86 @@
-% Extracts features after the data have been processed
+function [featData, labels, options] = extractFeatures(loadFname, varargin) %#ok<*STOUT>
+% extractFeatures: a function for extracting features from EEG data
+% recorded in the file loadFname, with optional input parameters. Note that
+% this is intended to be called from preprocPipeline.m
+%
+% Inputs:
+%   loadFname: the filename containing the preprocessed EEG data. It should
+%   contain a variable data that is samples x channels x time, a variable
+%   labels, and a variable time
+%   options: (optional) sets the parameters to use when extracting, which
+%   include:
+%       erpWinSize: the size of window to average
+%       specWinSize: the size of window to use for spectral decomposition
+%       specStartFrequency: the start of each frequency bin to extract
+%       specEndFrequency: the end of each frequency bin (should be same
+%       length as previous)
+%       maxTime: the maximum amount of time post-onset to consider for
+%       extraction.
+%
+% Outputs:
+%   featData: the data in the form of samples x features
+%   labels: the labels corresponding to these data
+%   options: the feature extraction options used
 
 % Parameters
-erpWinSize = 50;%ms
-specWinSize = 200;%ms
-specStartFreq = [4, 9, 13];%Hz, Theta
-specEndFreq = [8, 12, 20];%Hz, Theta
-subjects = 'CDEHILOP';
-exp = 'CompEEG';
-dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
+if nargin > 3
+    options = varargin{1};
+else
+    options = struct;
+end
+% Window size to average voltages (ms)
+if ~isfield(options, 'erpWinSize')
+    options.erpWinSize = 50;
+end
+% Window size for spectral decomposition (ms)
+if ~isfield(options, 'specWinSize')
+    options.specWinSize = 200;
+end
+% Frequencies to include (lower edge, Hz)
+if ~isfield(options, 'specStartFreq')
+    options.specStartFreq = [4, 9, 13];
+end
+% Frequencies to include (upper edge, Hz)
+if ~isfield(options, 'specEndFreq')
+    options.specEndFreq = [8, 12, 20];
+end
+% Maximum time post-stim to consider (ms)
+if ~isfield(options, 'maxTime')
+    options.maxTime = 800;
+end
 
-numSub = length(subjects);
+load(loadFname);
 
-for s = 1:numSub
-    sub = subjects(s);
-    
-    load([dataRoot exp '_' sub '_Preprocessed.mat']);
-    
-    [numSamp, numChan, ~] = size(data);
-    
-    minTime = min(time(time >= 0));
-    maxTime = 800;%max(time);
-    
-    erpWin = minTime:erpWinSize:maxTime;
-    specWin = minTime:specWinSize:maxTime;
-    
-    numErp = length(erpWin);
-    numSpec = length(specWin);
-    
-    featData = [];
-    
-    for e = 2:numErp
-        erp = (time >= erpWin(e-1)) & (time < erpWin(e));
-        newData = squeeze(mean(data(:,:,erp), 3));
+numSamp = size(data, 1); %#ok<*NODEF>
+
+minTime = min(time(time >= 0));
+
+erpWin = minTime:options.erpWinSize:options.maxTime;
+specWin = minTime:options.specWinSize:options.maxTime;
+
+numErp = length(erpWin);
+numSpec = length(specWin);
+
+featData = [];
+
+for e = 2:numErp
+    erp = (time >= erpWin(e-1)) & (time < erpWin(e));
+    newData = squeeze(mean(data(:,:,erp), 3));
+    featData = cat(2, featData, newData);
+end
+
+for p = 2:numSpec
+    for sp = 1:length(options.specStartFreq)
+        spec = (time >= specWin(p-1)) & (time < specWin(p));
+        newData = [];
+        for n = 1:numSamp
+            dataToTrans = squeeze(data(n,:,spec));
+            trans = abs(fft(dataToTrans'));
+            freqData = mean(trans(options.specStartFreq(sp):options.specEndFreq(sp), :));
+            newData = cat(1, newData, freqData);
+        end
         featData = cat(2, featData, newData);
     end
-    
-    for p = 2:numSpec
-        for sp = 1:length(specStartFreq)
-            spec = (time >= specWin(p-1)) & (time < specWin(p));
-            newData = [];
-            for n = 1:numSamp
-                dataToTrans = squeeze(data(n,:,spec));
-                trans = abs(fft(dataToTrans'));
-                freqData = mean(trans(specStartFreq(sp):specEndFreq(sp), :));
-                newData = cat(1, newData, freqData);
-            end
-            featData = cat(2, featData, newData);
-        end
-    end
-    
-    save([dataRoot exp '_' sub '_Features_Less.mat'], 'featData', 'labels', 'erpWin', 'specWin');
-    
+end
+
 end

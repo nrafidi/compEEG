@@ -1,14 +1,14 @@
 % Runs cross-validated classification within subject for the competition
 % data
+
 addpath ./logisticRegression/
 
-subjects = 'CDEHILOP';
+subjects = {'H', 'I', 'J', 'L', 'P', 'W', 'CC', 'FF'};
 numSub = length(subjects);
 numFolds = 5;
-% numFeats = 1:10:500;
 doZ = 1;
 fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/CompEEG_';
-fSuffix = '_Features_Less.mat';
+fSuffix = '_Features.mat';
 
 subAccs = nan(numSub, numFolds);
 subModels = cell(numSub, numFolds);
