@@ -33,6 +33,7 @@ for i = 1:numEpochs
     if (label > labelStart) && (label ~= 255)
         labelInds(i) = true;
         stimLabels(i, 2) = label;
+        
         if label > labelStart*2
             stimLabels(i, 1) = 0;
         else

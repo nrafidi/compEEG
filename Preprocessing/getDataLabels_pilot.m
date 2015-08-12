@@ -16,6 +16,9 @@ for i = 1:numEpochs
     if iscell(epochInfo(i).eventtype)
         epochInfo(i).eventtype = epochInfo(i).eventtype{1};
     end
+    if ~isstr(epochInfo(i).eventtype)
+        epochInfo(i).eventtype = num2str(epochInfo(i).eventtype);
+    end
     if fourthInstSeen
         label = str2num(epochInfo(i).eventtype);%#ok<*ST2NM>
         

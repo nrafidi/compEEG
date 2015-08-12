@@ -13,26 +13,54 @@ function [data, labels, time] = getDataLabels_KR(EEG)
 
 % Extract the epochs
 epochInfo = EEG.epoch;
+% epochInfo = [epochInfo(1:62) epochInfo(65:end)]; % for sub N
 numEpochs = length(epochInfo);
 
 labelInds = false(numEpochs, 1);
 stimLabels = nan(numEpochs, 2); %Study/Quiz binary, label identity
-
-oddblock = false;
-prevEvent = str2num(epochInfo(1).eventtype);%#ok<*ST2NM>
+% 
+% if ischar(epochInfo(1).eventtype)
+%     firstEvent = str2num(epochInfo(1).eventtype);%#ok<*ST2NM>
+% else
+%     firstEvent = epochInfo(1).eventtype;
+% end
+% if firstEvent == 1 || firstEvent == 255
+%     oddblock = false;
+% else
+%     oddblock = true;
+% end
+oddblock = true;
+collectLabels = [];
 for i = 2:numEpochs
-    currEvent = str2num(epochInfo(i).eventtype);
+    if ischar(epochInfo(i).eventtype);
+        currEvent = str2num(epochInfo(i).eventtype); %#ok<ST2NM>
+    else
+        currEvent = epochInfo(i).eventtype;
+    end
     
-    if currEvent == 1 && prevEvent == 1
+    if currEvent == 255
+        collectLabels = [];
+        if stimLabels(i-1, 2) == 1;
+            labelInds(i-1) = false;
+        end
         oddblock = ~oddblock;
+%         keyboard;
+    else
+        labelInds(i) = true;
+        collectLabels = cat(1, collectLabels, currEvent);
+        
+        if length(unique(collectLabels)) < (length(collectLabels) - 1)
+            oddblock = ~oddblock;
+            collectLabels = [];
+%             keyboard;
+        end
+        
+        stimLabels(i, 2) = currEvent;
+        stimLabels(i, 1) = double(oddblock);
     end
     
-    if currEvent > 1
-        labelInds(i) = true;
-        stimLabels(i, 2) = currEvent;
-        stimLabels(i, 1) = double(~oddblock);
-    end
-    prevEvent = currEvent;
+    
+    
 end
 
 labels = stimLabels(labelInds, :);

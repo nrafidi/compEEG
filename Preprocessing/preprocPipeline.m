@@ -30,7 +30,9 @@ eeglab;
 
 % Path to data files
 dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/';
-% Save file
+% Intermediate files
+saveInterDir = [dataRoot '/preproc-partial/' sub '/'];
+% Final files
 saveFname = [dataRoot '/preproc-final/' sub '/' experi '_' sub];
 % Epochs
 epochWin = [-0.3, 2];
@@ -85,7 +87,7 @@ end
 
 
 % Load Visually Inspected Data
-EEG = pop_loadset('filename',[fnameRoot '.set'],'filepath',[dataRoot '/preproc-partial/' sub '/']);
+EEG = pop_loadset('filename',[fnameRoot '.set'],'filepath', saveInterDir);
 EEG = eeg_checkset( EEG );
 
 % % Load Channel Locations - currently not working
@@ -106,7 +108,7 @@ if ~isnan(options.HP) && ~isnan(options.LP)
     EEG.setname=[EEG.setname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     saveFname = [saveFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
+    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 end
 
 % Notch Filter
@@ -118,7 +120,7 @@ if ~isnan(options.N)
     EEG.setname=[EEG.setname '_N' num2str(options.N)];
     saveFname = [saveFname '_N' num2str(options.N)];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
+    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 end
 
 % Re-reference the electrodes to the group mean
@@ -130,7 +132,7 @@ if options.doRef
     EEG.setname=[EEG.setname '_Ref'];
     saveFname = [saveFname '_Ref'];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
+    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 end
 
 % Parse into Epochs and remove Baseline
@@ -140,7 +142,7 @@ EEG = pop_rmbase( EEG, [-300.7812             0]);
 EEG.setname=[EEG.setname '_Base'];
 saveFname = [saveFname '_Base'];
 oldSetName = EEG.setname;
-EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
+EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 
 % Run ICA
 if options.runICA
@@ -164,7 +166,7 @@ if options.runICA || options.useICA
     EEG.setname=[oldSetName '_ICA1-2'];
     saveFname = [saveFname '_ICA1-2'];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
+    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',saveInterDir);
 end
 
 % Create .mat file
@@ -178,8 +180,13 @@ if strcmp(experi, 'CompEEG')
 else
     [data, labels, time] = getDataLabels_KR(EEG);
 end
+% 
+disp(sum(labels(:,1) == 1));
+bar(labels(:,1));
+% keyboard;
 
-save([saveFname '.mat'], 'data', 'labels', 'time', 'options');
+preProcOptions = options; %#ok<*NASGU>
+save([saveFname '.mat'], 'data', 'labels', 'time', 'preProcOptions');
 
 % Extract Relevant Features
 

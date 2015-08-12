@@ -74,7 +74,7 @@ if regBias
         end
     end
 else
-    weights(end+1) = 0;
+    weights(end+1,:) = 0;
     weights_prev = weights;
     while abs(tr - tr_prev) > eps
         times = times + 1;

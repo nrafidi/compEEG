@@ -3,12 +3,13 @@
 
 addpath ./logisticRegression/
 
-subjects = {'H', 'I', 'J', 'L', 'P', 'W', 'CC', 'FF'};
+subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'G', 'GG', 'HH', 'JJ', ...
+    'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};%{'H', 'I', 'J', 'L', 'P', 'W', 'CC', 'FF'};
 numSub = length(subjects);
 numFolds = 5;
 doZ = 1;
-fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/CompEEG_';
-fSuffix = '_Features.mat';
+fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
+fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features.mat';
 
 subAccs = nan(numSub, numFolds);
 subModels = cell(numSub, numFolds);
@@ -20,12 +21,10 @@ rng('shuffle');
 
 testVals = nan(2, 1);
 
-% for reps = 1:20
-% for doZ = 0:1
 for s = 1:length(subjects)
     
-    sub = subjects(s);
-    load([fPrefix sub fSuffix]);
+    sub = subjects{s};
+    load([fPrefix sub '/CompEEG_' sub fSuffix]);
     
     
     Y = labels(:,1);
@@ -46,9 +45,9 @@ for s = 1:length(subjects)
         end
         tic
         if f > 1
-            [B, lambda] = logReg(trainData, Y(~testInds), [1 10], false, B);
+            [B, lambda] = logReg(trainData, Y(~testInds), [1 2], false, B);
         else
-            [B, lambda] = logReg(trainData, Y(~testInds), [1 10], false);
+            [B, lambda] = logReg(trainData, Y(~testInds), [1 2], false);
         end
         toc
         disp(lambda);
@@ -67,15 +66,9 @@ for s = 1:length(subjects)
     subModel = subModels(s,:);
     subFold = subFolds{s};
     
-    save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' sub '_Less.mat'],...
+    save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' sub '_Def.mat'],...
         'subAcc', 'subModel', 'subFold');
     
 end
 
 disp(mean(subAccs, 2));
-
-% save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' subjects '.mat']);
-
-%     testVals(doZ+1) = mean(subAccs, 2);
-% end
-% end
