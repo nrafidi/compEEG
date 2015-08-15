@@ -18,7 +18,7 @@ for iTuple = 1:numTuples
     subplot(4, 4, iTuple);
     hist(populationAccHist(:,iTuple));
     title(titles{iTuple});
-    xlim([0.4, 0.9]);
+    xlim([0.3, 0.8]);
     hold on;
     line([meanTrueAcc(iTuple) meanTrueAcc(iTuple)], ...
         [0 30]);
@@ -28,4 +28,4 @@ for iTuple = 1:numTuples
     hold off;
 end
 
-suptitle(sprintf('Bootstrap results for different tuples of KR data\nOnly Using Answer Info'));
+suptitle(sprintf('Bootstrap results for different tuples of KR data\nOnly Using Correctly Answered Instances'));

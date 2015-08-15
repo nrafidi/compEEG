@@ -1,6 +1,6 @@
 function [ ROC_X_true, ROC_Y_true, ROC_T_true, AUCs_true, ...
     ROC_X_pop, ROC_Y_pop, ROC_T_pop, AUCs_pop ] = runSubjBootstrap_KR(...
-    krTrajList, krLabelList, numDraws)
+    krTrajList, krLabelList, krRespList, numDraws)
 % runSubjBootstrap runs tupled KR for the subjects in the given krTrajList
 %   and then creates a population histogram of results by sampling those
 %   subjects with replacement numDraws times.
@@ -15,7 +15,7 @@ for iSub = 1:numSub
 end
 
 [ROC_X_true, ROC_Y_true, ROC_T_true, AUCs_true] = runTupled_KR(cell2mat(krTrajList), cell2mat(krLabelList), ...
-    cell2mat(foldsPerSub));
+    cell2mat(krRespList), cell2mat(foldsPerSub));
 
 ROC_X_pop = cell(numDraws, 1);
 ROC_Y_pop = cell(numDraws, 1);
@@ -27,6 +27,7 @@ for iDraw = 1:numDraws
     subjectsToUse = datasample(1:numSub, numSub);
     [ROC_X_pop{iDraw}, ROC_Y_pop{iDraw}, ROC_T_pop{iDraw}, AUCs_pop{iDraw}] = runTupled_KR(cell2mat(krTrajList(subjectsToUse)), ...
         cell2mat(krLabelList(subjectsToUse)), ...
+        cell2mat(krRespList(subjectsToUse)), ...
         cell2mat(foldsPerSub(subjectsToUse)));
 end
 

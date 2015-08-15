@@ -10,6 +10,7 @@ numSub = length(subjects);
 behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
 
 krTrajList = cell(numSub, 1);
+krRespList = cell(numSub, 1);
 krLabelList = cell(numSub, 1);
 accuracyList = [];
 
@@ -80,19 +81,19 @@ for s = 1:numSub
     end
     
     
-    krTraj = newResponseTraj;%cat(2, krTraj, newResponseTraj);
+%     krTraj = newResponseTraj;%cat(2, krTraj, newResponseTraj);
     
-    fprintf('Proportion Correct for subject %s = %d\n', sub, ...
-        sum(krLabels)/length(krLabels));
-    
+%     fprintf('Proportion Correct for subject %s = %d\n', sub, ...
+%         sum(krLabels)/length(krLabels));
+    krRespList{s} = newResponseTraj;
     krTrajList{s} = krTraj;
     krLabelList{s} = krLabels;
 end
 
 [ ROC_X_true, ROC_Y_true, ROC_T_true, AUCs_true, ...
     ROC_X_pop, ROC_Y_pop, ROC_T_pop, AUCs_pop ] = runSubjBootstrap_KR(...
-    krTrajList, krLabelList, numDraws);
+    krTrajList, krLabelList, krRespList, numDraws);
 
-save ../../compEEG-data/results/KR_analysis_output_onlyAnsInfo.mat ...
+save ../../compEEG-data/results/KR_analysis_output_onlyCorrAns.mat ...
     ROC_X_true ROC_Y_true ROC_T_true AUCs_true ...
     ROC_X_pop ROC_Y_pop ROC_T_pop AUCs_pop
