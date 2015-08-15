@@ -1,13 +1,13 @@
 % Process and plot KR analysis results
 
-meanTrueAcc = mean(trueAcc, 1);
-numDraws = length(populationAcc);
+meanTrueAcc = mean(AUCs_true, 1);
+numDraws = length(AUCs_pop);
 
-numTuples = size(trueAcc, 2);
+numTuples = size(AUCs_true, 2);
 populationAccHist = nan(numDraws, numTuples);
 
 for iDraw = 1:numDraws    
-    populationAccHist(iDraw,:) = mean(populationAcc{iDraw}, 1);
+    populationAccHist(iDraw,:) = mean(AUCs_pop{iDraw}, 1);
 end
 
 
@@ -18,7 +18,7 @@ for iTuple = 1:numTuples
     subplot(4, 4, iTuple);
     hist(populationAccHist(:,iTuple));
     title(titles{iTuple});
-    xlim([0.4, 0.8]);
+    xlim([0.4, 0.9]);
     hold on;
     line([meanTrueAcc(iTuple) meanTrueAcc(iTuple)], ...
         [0 30]);
@@ -28,4 +28,4 @@ for iTuple = 1:numTuples
     hold off;
 end
 
-suptitle('Bootstrap results for different tuples of KR data');
+suptitle(sprintf('Bootstrap results for different tuples of KR data\nOnly Using Answer Info'));
