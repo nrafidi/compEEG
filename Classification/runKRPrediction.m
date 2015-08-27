@@ -40,7 +40,8 @@ for i = 1:length(uniqueItems)
     items = krLabels == (i+1);
     
     P = [krData(items,:) ones(sum(items), 1)]*B;
-    probs = exp(P)./(1+exp(P));
+%     probs = exp(P)./(1+exp(P));
+    probs = P;
     if length(probs) == 4
         itemTraj(i, :) = probs';
     else
@@ -51,7 +52,7 @@ end
 figure;
 plot(1:4, itemTraj);
 
-save([fResPrefix 'CompEEG__KR_' sub '_itemTraj.mat'], 'itemTraj');
+save([fResPrefix 'CompEEG__KR_' sub '_itemTraj_logit.mat'], 'itemTraj');
 
 end
 

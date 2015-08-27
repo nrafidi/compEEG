@@ -16,7 +16,7 @@ for s = 1:numSub
     sub = subjects{s};
     load([behaveDataRoot '/' sub '/' sub '_answerTraj.mat']);
     load(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' ...
-        sub '/KRanalysis.mat']);
+        sub '/KRanalysis_logit.mat']);
     
     krLabels = logical(krLabels);
     responseTraj(skippedItems,:) = []; %#ok<*SAGROW>

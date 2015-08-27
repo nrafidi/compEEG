@@ -24,6 +24,6 @@ figure;
 plot(1:4, [nanmean(itemTrajCorr); nanmean(itemTrajInc)]);
 legend({'Correct', 'Incorrect'});
 
-save([fResPrefix sub '_itemTraj_Answers.mat'], 'itemTrajCorr', 'itemTrajInc', 'corrAnswers');
+save([fResPrefix sub '_itemTraj_Answers_logit.mat'], 'itemTrajCorr', 'itemTrajInc', 'corrAnswers');
 
 end

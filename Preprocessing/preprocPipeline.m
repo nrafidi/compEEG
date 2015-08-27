@@ -89,6 +89,7 @@ end
 % Load Visually Inspected Data
 EEG = pop_loadset('filename',[fnameRoot '.set'],'filepath', saveInterDir);
 EEG = eeg_checkset( EEG );
+runningFname = [EEG.setname];
 
 % % Load Channel Locations - currently not working
 % EEG=pop_chanedit(EEG, 'load',{[dataRoot 'electrode_locs.xyz'] 'filetype' 'xyz'},'load',{[dataRoot 'electrode_locs.xyz'] 'filetype' 'xyz'},'save',[]);
@@ -100,7 +101,8 @@ EEG = eeg_checkset( EEG );
 % EEG = eeg_checkset( EEG );
 
 % Band Pass Filter
-if ~isnan(options.HP) && ~isnan(options.LP)
+if ~isnan(options.HP) && ~isnan(options.LP) && ...
+        ~exist([saveInterDir runningFname '_BP' num2str(options.HP) '-' num2str(options.LP) '.set'], 'file');
     fprintf('BP filtering\n')
     tic
     EEG = pop_eegfiltnew(EEG, options.HP, options.LP, 846, 0, [], 1);
@@ -109,10 +111,14 @@ if ~isnan(options.HP) && ~isnan(options.LP)
     saveFname = [saveFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     EEG = eeg_checkset( EEG );
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+elseif ~isnan(options.HP) && ~isnan(options.LP)
+    runningFname = [runningFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
+    EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
 % Notch Filter
-if ~isnan(options.N)
+if ~isnan(options.N) && ...
+        ~exist([saveInterDir runningFname '_N' num2str(options.N) '.set'], 'file');
     fprintf('Notch filtering\n');
     tic
     EEG = pop_eegfiltnew(EEG, options.N - 5, options.N + 5, 846, 1, [], 1);
@@ -121,10 +127,13 @@ if ~isnan(options.N)
     saveFname = [saveFname '_N' num2str(options.N)];
     EEG = eeg_checkset( EEG );
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+elseif ~isnan(options.N)
+    runningFname = [runningFname '_N' num2str(options.N)];
+    EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
 % Re-reference the electrodes to the group mean
-if options.doRef
+if options.doRef && ~exist([saveInterDir runningFname '_Ref.set'], 'file')
     fprintf('Re-referencing\n');
     tic
     EEG = pop_reref( EEG, [],'exclude',[63 65:72] );
@@ -133,19 +142,27 @@ if options.doRef
     saveFname = [saveFname '_Ref'];
     EEG = eeg_checkset( EEG );
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+elseif options.doRef
+    runningFname = [runningFname '_Ref'];
+    EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
 % Parse into Epochs and remove Baseline
-EEG = pop_epoch( EEG, {  }, epochWin, 'newname', [EEG.setname '_Epochs'], 'epochinfo', 'yes');
-EEG = eeg_checkset( EEG );
-EEG = pop_rmbase( EEG, [-300.7812             0]);
-EEG.setname=[EEG.setname '_Base'];
-saveFname = [saveFname '_Base'];
-oldSetName = EEG.setname;
-EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+if ~exist([saveInterDir runningFname '_Epochs_Base.set'], 'file')
+    EEG = pop_epoch( EEG, {  }, epochWin, 'newname', [EEG.setname '_Epochs'], 'epochinfo', 'yes');
+    EEG = eeg_checkset( EEG );
+    EEG = pop_rmbase( EEG, [-300.7812             0]);
+    EEG.setname=[EEG.setname '_Epochs_Base'];
+    saveFname = [saveFname '_Epochs_Base'];
+    oldSetName = EEG.setname;
+    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+else
+    runningFname = [runningFname '_Epochs_Base'];
+    EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
+end
 
 % Run ICA
-if options.runICA
+if options.runICA && ~exist([saveInterDir runningFname '_ICA1-2.set'], 'file')
     fprintf('Running ICA\n');
     tic
     EEG = pop_runica(EEG, 64, 'icatype', 'sobi');
@@ -158,7 +175,8 @@ elseif options.useICA
 end
 
 % Remove Blinks
-if options.runICA || options.useICA
+if (options.runICA || options.useICA) && ...
+        ~exist([saveInterDir runningFname '_ICA1-2.set'], 'file')
     fprintf('Removing Blinks\n');
     tic
     EEG = pop_subcomp( EEG, [1 2], 0);
@@ -167,6 +185,9 @@ if options.runICA || options.useICA
     saveFname = [saveFname '_ICA1-2'];
     EEG = eeg_checkset( EEG );
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',saveInterDir);
+elseif options.runICA
+    runningFname = [runningFname '_ICA1-2'];
+    EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
 % Create .mat file
@@ -180,7 +201,7 @@ if strcmp(experi, 'CompEEG')
 else
     [data, labels, time] = getDataLabels_KR(EEG);
 end
-% 
+%
 disp(sum(labels(:,1) == 1));
 bar(labels(:,1));
 % keyboard;
