@@ -23,7 +23,7 @@ function [featData, labels, options] = extractFeatures(loadFname, varargin) %#ok
 %   options: the feature extraction options used
 
 % Parameters
-if nargin > 3
+if nargin > 1
     options = varargin{1};
 else
     options = struct;
@@ -35,6 +35,10 @@ end
 % Window size for spectral decomposition (ms)
 if ~isfield(options, 'specWinSize')
     options.specWinSize = 200;
+end
+% Overlap windows?
+if ~isfield(options, 'overLap')
+    options.overLap = false;
 end
 % Frequencies to include (lower edge, Hz)
 if ~isfield(options, 'specStartFreq')
@@ -55,32 +59,37 @@ numSamp = size(data, 1); %#ok<*NODEF>
 
 minTime = min(time(time >= 0));
 
-erpWin = minTime:options.erpWinSize:options.maxTime;
-specWin = minTime:options.specWinSize:options.maxTime;
+if options.overLap
+    erpWin = minTime:20:options.maxTime;
+%     specWin = minTime:20:options.maxTime;
+else
+    erpWin = minTime:options.erpWinSize:options.maxTime;
+%     specWin = minTime:options.specWinSize:options.maxTime;
+end
 
 numErp = length(erpWin);
-numSpec = length(specWin);
+% numSpec = length(specWin);
 
 featData = [];
 
 for e = 2:numErp
-    erp = (time >= erpWin(e-1)) & (time < erpWin(e));
+    erp = (time >= erpWin(e-1)) & (time < (erpWin(e-1)+options.erpWinSize));
     newData = squeeze(mean(data(:,:,erp), 3));
     featData = cat(2, featData, newData);
 end
 
-for p = 2:numSpec
-    for sp = 1:length(options.specStartFreq)
-        spec = (time >= specWin(p-1)) & (time < specWin(p));
-        newData = [];
-        for n = 1:numSamp
-            dataToTrans = squeeze(data(n,:,spec));
-            trans = abs(fft(dataToTrans'));
-            freqData = mean(trans(options.specStartFreq(sp):options.specEndFreq(sp), :));
-            newData = cat(1, newData, freqData);
-        end
-        featData = cat(2, featData, newData);
-    end
-end
+% for p = 2:numSpec
+%     for sp = 1:length(options.specStartFreq)
+%         spec = (time >= specWin(p-1)) & (time < (specWin(p-1)+options.specWinSize));
+%         newData = [];
+%         for n = 1:numSamp
+%             dataToTrans = squeeze(data(n,:,spec));
+%             trans = abs(fft(dataToTrans'));
+%             freqData = mean(trans(options.specStartFreq(sp):options.specEndFreq(sp), :));
+%             newData = cat(1, newData, freqData);
+%         end
+%         featData = cat(2, featData, newData);
+%     end
+% end
 
 end
