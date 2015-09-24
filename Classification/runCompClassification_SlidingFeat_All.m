@@ -4,18 +4,21 @@
 addpath ./logisticRegression/
 addpath ../Preprocessing/
 
-subjects = ...{'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
-    ...{'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
-    {'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+subjects = {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
+    'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
+    'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 numSub = length(subjects);
-numFeatWins = 40*4;%#magic
+numFeatWins = 40;%magic
 winSizeOptions = 50:50:200;
 numSizes = length(winSizeOptions);
+
+freqName = 'beta';
+
 doZ = 1;
 fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
-fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2.mat';
-
+fSuffix = ['_Vis_Hilbert-' freqName '_Epochs.mat'];
 subAccs = nan(numSub, numFeatWins, numSizes);
+subModels = cell(numSub, numFeatWins, numSizes);
 
 rng('shuffle');
 
@@ -60,15 +63,20 @@ for s = 1:length(subjects)
                 Yhat = double(P > 0.5);
                 
                 subAccs(s, p, w) = sum(Yhat == Y(testInds))/length(Yhat);
-                
+                subModels{s, p, w} = B;
             end
             
         end
         subAcc = squeeze(subAccs(s,:,:));
-        
-        
-        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' sub '_Def_Slide_All.mat'],...
+        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' sub '_Hilbert-' freqName '_Slide_All.mat'],...
             'subAcc');
         fprintf('Subject %s succeeded.\n', sub);
+        
+        subModel = subModels(s,:);
+        if ~exist(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'], 'dir')
+            mkdir(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/']);
+        end
+        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/CompEEG_CV_Slide_Hilbert-' freqName '_Models.mat'],...
+            'subModel');
     end
 end

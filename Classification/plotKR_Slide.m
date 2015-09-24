@@ -1,12 +1,13 @@
 % plot KR Slide
+clear;
 subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
-    'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+    'K', 'M', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 numSub = length(subjects);
 
 
 timePoints = 0:20:780;
 numTimePoints = length(timePoints);
-winWidths = 50:50:200;
+winWidths = 50;
 numWinWidths = length(winWidths);
 numRounds = 4;
 
@@ -18,7 +19,7 @@ trajSubInc = nan(numSub, numRounds, numWinWidths, numTimePoints);
 for s = 1:numSub
     
     load(['../../compEEG-data/results/' subjects{s} ...
-        '/KRanalysis_SlidingFeat.mat']);
+        '/KRanalysis_SlidingFeat_Hilbert-theta.mat']);
     trajInds = logical(responseTraj);
     for r = 1:numRounds
         for w = 1:numWinWidths
@@ -40,7 +41,9 @@ for r = 1:numRounds
         stdTrajCorr = squeeze(nanstd(trajCorr(:,r,w,:),0,1))./sqrt(numSub);
         meanTrajInc = squeeze(nanmean(trajInc(:,r,w,:), 1));
         stdTrajInc = squeeze(nanstd(trajInc(:,r,w,:),0,1))./sqrt(numSub);
-        subplot(2,2,w);
+        if numWinWidths > 1
+            subplot(2,1,w);
+        end
         plot(timePoints, meanTrajCorr, 'b');
         hold on;
         plot(timePoints, meanTrajInc, 'r');
@@ -54,7 +57,7 @@ for r = 1:numRounds
         title(sprintf('Window Size %d', winWidths(w)));
     end
     suptitle(sprintf('Round %d', r));
-    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_IC_round%d.png', r));
+    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_IC_round%d_Hilbert-theta.png', r));
 end
 
 %Subseqeuently corr/inc on same plot
@@ -65,7 +68,9 @@ for r = 1:numRounds
         stdTrajCorr = squeeze(nanstd(trajSubCorr(:,r,w,:),0,1))./sqrt(numSub);
         meanTrajInc = squeeze(nanmean(trajSubInc(:,r,w,:), 1));
         stdTrajInc = squeeze(nanstd(trajSubInc(:,r,w,:),0,1))./sqrt(numSub);
-        subplot(2,2,w);
+        if numWinWidths > 1
+            subplot(2,1,w);
+        end
         plot(timePoints, meanTrajCorr, 'b');
         hold on;
         plot(timePoints, meanTrajInc, 'r');
@@ -79,24 +84,84 @@ for r = 1:numRounds
         title(sprintf('Window Size %d', winWidths(w)));
     end
     suptitle(sprintf('Round %d', r));
-    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_RF_round%d.png', r));
+    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_RF_round%d_Hilbert-theta.png', r));
 end
 
 %All
-for r = 1:numRounds
-    f = figure;
-    for w = 1:numWinWidths
-        meanTrajAll = squeeze(nanmean(trajAll(:,r,w,:), 1));
-        stdTrajAll = squeeze(nanstd(trajAll(:,r,w,:),0,1))./sqrt(numSub);
-        subplot(2,2,w);
-        plot(timePoints, meanTrajAll);
-        errorbar(timePoints, meanTrajAll, stdTrajAll);
-        ylim([0.3 0.7]);
-        xlim([min(timePoints), max(timePoints)]);
-        ylabel('P(C)');
-        xlabel('Start of Window (ms)');
-        title(sprintf('Window Size %d', winWidths(w)));
+f = figure;
+
+colors = 'rgbm';
+for w = 1:numWinWidths
+    if numWinWidths > 1
+        subplot(2,1,w);
     end
-    suptitle(sprintf('Round %d', r));
-    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_all_round%d.png', r));
+    hold on;
+    meanTrajAll = cell(numRounds, 1);
+    stdTrajAll = cell(numRounds, 1);
+    for r = 1:numRounds
+        meanTrajAll{r} = squeeze(nanmean(trajAll(:,r,w,:), 1));
+        stdTrajAll{r} = squeeze(nanstd(trajAll(:,r,w,:),0,1))./sqrt(numSub);
+        plot(timePoints, meanTrajAll{r}, colors(r));
+        
+    end
+    legend({'R1', 'R2', 'R3', 'R4'}, 'Location', 'northeast');
+    for r = 1:numRounds
+        errorbar(timePoints, meanTrajAll{r}, stdTrajAll{r}, 'Color', colors(r));
+    end
+    ylim([0.3 0.7]);
+    xlim([min(timePoints), max(timePoints)]);
+    ylabel('P(C)');
+    xlabel('Start of Window (ms)');
+    title(sprintf('Window Size %d', winWidths(w)));
+    
 end
+suptitle('All Samples');
+saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_all_Hilbert-theta.png'));
+
+f = figure;
+colors = 'rgbm';
+for w = 1:numWinWidths
+    if numWinWidths > 1
+        subplot(2,1,w);
+    end
+    hold on;
+    for r = 1:numRounds
+        meanTrajCorr = squeeze(nanmean(trajSubCorr(:,r,w,:), 1));
+        stdTrajCorr = squeeze(nanstd(trajSubCorr(:,r,w,:),0,1))./sqrt(numSub);
+        
+        errorbar(timePoints, meanTrajCorr, stdTrajCorr, 'Color', colors(r));
+        
+    end
+    ylim([0.3 0.7]);
+    xlim([min(timePoints), max(timePoints)]);
+    ylabel('P(C)');
+    xlabel('Start of Window (ms)');
+    title(sprintf('Window Size %d', winWidths(w)));
+    legend({'Round 1', 'Round 2', 'Round 3', 'Round 4'});
+end
+suptitle('Subsequently Remembered');
+saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_Remembered_Hilbert-theta.png'));
+
+f = figure;
+colors = 'rgbm';
+for w = 1:numWinWidths
+    if numWinWidths > 1
+        subplot(2,1,w);
+    end
+    hold on;
+    for r = 1:numRounds
+        meanTrajInc = squeeze(nanmean(trajSubInc(:,r,w,:), 1));
+        stdTrajInc = squeeze(nanstd(trajSubInc(:,r,w,:),0,1))./sqrt(numSub);
+        
+        errorbar(timePoints, meanTrajInc, stdTrajInc, 'Color', colors(r));
+        
+    end
+    ylim([0.3 0.7]);
+    xlim([min(timePoints), max(timePoints)]);
+    ylabel('P(C)');
+    xlabel('Start of Window (ms)');
+    title(sprintf('Window Size %d', winWidths(w)));
+    legend({'Round 1', 'Round 2', 'Round 3', 'Round 4'});
+end
+suptitle('Subsequently Forgotten');
+saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_Forgotten_Hilbert-theta.png'));

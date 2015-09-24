@@ -19,11 +19,11 @@ numEpochs = length(epochInfo);
 labelInds = false(numEpochs, 1);
 stimLabels = nan(numEpochs, 2); %Study/Quiz binary, label identity
 % 
-% if ischar(epochInfo(1).eventtype)
-%     firstEvent = str2num(epochInfo(1).eventtype);%#ok<*ST2NM>
-% else
-%     firstEvent = epochInfo(1).eventtype;
-% end
+if ischar(epochInfo(1).eventtype)
+    firstEvent = str2num(epochInfo(1).eventtype);%#ok<*ST2NM>
+else
+    firstEvent = epochInfo(1).eventtype;
+end
 % if firstEvent == 1 || firstEvent == 255
 %     oddblock = false;
 % else
@@ -31,14 +31,19 @@ stimLabels = nan(numEpochs, 2); %Study/Quiz binary, label identity
 % end
 oddblock = true;
 collectLabels = [];
+prevprevprevEvent = nan;
+prevprevEvent = nan;
+prevEvent = firstEvent;
 for i = 2:numEpochs
     if ischar(epochInfo(i).eventtype);
-        currEvent = str2num(epochInfo(i).eventtype); %#ok<ST2NM>
+        currEvent = str2num(epochInfo(i).eventtype);
     else
         currEvent = epochInfo(i).eventtype;
     end
-    
-    if currEvent == 255
+%     if i == 128
+%         keyboard;
+%     end
+    if (currEvent == 255) && (prevprevEvent ~= 255) && (prevprevprevEvent ~=255)
         collectLabels = [];
         if stimLabels(i-1, 2) == 1;
             labelInds(i-1) = false;
@@ -49,17 +54,19 @@ for i = 2:numEpochs
         labelInds(i) = true;
         collectLabels = cat(1, collectLabels, currEvent);
         
-        if length(unique(collectLabels)) < (length(collectLabels) - 1)
-            oddblock = ~oddblock;
-            collectLabels = [];
-%             keyboard;
-        end
-        
+%         if length(unique(collectLabels)) < (length(collectLabels) - 1)
+%             oddblock = ~oddblock;
+%             collectLabels = [];
+% %             keyboard;
+%         end
+%         
         stimLabels(i, 2) = currEvent;
         stimLabels(i, 1) = double(oddblock);
     end
     
-    
+    prevprevprevEvent = prevprevEvent;
+    prevprevEvent = prevEvent;
+    prevEvent = currEvent;
     
 end
 

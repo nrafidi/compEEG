@@ -1,4 +1,4 @@
-function [ itemTraj ] = runKRPrediction_SlidingFeat(sub, krData, krLabels)
+function [ itemTraj ] = runKRPrediction_SlidingFeat(sub, krData, krLabels, compWin)
 % Applies a classifier trained on a subject's competition data to their KR
 % data
 
@@ -11,19 +11,28 @@ fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'];
 if ~exist(fResPrefix, 'dir')
     mkdir(fResPrefix);
 end
-fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap.mat';
+fSuffix = '_Vis_Hilbert-theta_Epochs_Features_Overlap.mat';
 
 rng('shuffle');
 
-load([fCPrefix sub fSuffix]);
-
+compFname = [fCPrefix sub fSuffix];
+if exist(compFname, 'file')
+    load(compFname);
+else
+    compOpt = struct;
+    compOpt.overLap = true;
+    
+    [featData, labels] = extractFeatures(compFname(1:(end-21)), compOpt);
+end
+featData = double(featData);
 [compData, mu, sigma] = zscore(featData);
 compLabels = labels(:,1); %#ok<*NODEF>
 
-compWinToUse = (10*numChan + 1):(11*numChan);
+compWinToUse = (compWin*numChan + 1):((compWin+1)*numChan);
 
 B = logReg(compData(:,compWinToUse), compLabels, [1 10], false);
 
+old_krLabels = krLabels;
 krData = krData(krLabels(:,1) == 1, :);
 krData = (krData - repmat(mu, size(krData, 1), 1))./repmat(sigma, size(krData, 1), 1);
 krLabels = krLabels(krLabels(:,1) ==1, 2);
