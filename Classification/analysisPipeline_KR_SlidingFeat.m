@@ -1,21 +1,26 @@
-subjects = {'AA', 'BB', 'DD', 'F', 'EE', 'GG', 'HH', 'JJ', ...
-        'K', 'M', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z', 'N'};
+% subjects = {'AA', 'BB', 'DD', 'F', 'EE', 'GG', 'HH', 'JJ', ...
+%         'K', 'M', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z', 'N'};
+
+subjects = {'M'};
 
 numSub = length(subjects);
-
+addpath ../Preprocessing/
 behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
 fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
-fSuffix = '_Vis_Hilbert-theta_Epochs.mat';
+% fSuffix = '_Vis_Hilbert-theta_Epochs.mat';
+fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2.mat';
 KRanswer = importdata('/Users/nrafidi/Documents/MATLAB/compEEG-stim/KR_answer.txt');
 winSizeOptions = 50;
-compWinToUse = 9;
+compWinToUse = 21;
 numSizes = length(winSizeOptions);
 for s = 1:numSub
     sub = subjects{s};
     disp(sub);
     loadFname = [fPrefix sub '/CompEEG__KR_' sub fSuffix];
     fname = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' ...
-        sub '/KRanalysis_SlidingFeat_Hilbert-theta.mat'];
+        sub '/KRanalysis_SlidingFeat_lateComp.mat'];
+%         sub '/KRanalysis_SlidingFeat_Hilbert-theta.mat'];
+        
     krTraj = cell(numSizes, 1);
     krLabels = cell(numSizes, 1);
     %     try
@@ -74,12 +79,7 @@ for s = 1:numSub
         end
     end
     responseTraj = newResponseTraj;
-    if sub == 'N'
-        keyboard;
-    end
+    keyboard;
     save(fname, 'krTraj', 'krLabels', 'skippedItems', 'responseTraj');
-    %     catch
-    %         fprintf('Subject %s Failed\n', sub);
-    %     end
     
 end

@@ -57,14 +57,18 @@ load(loadFname);
 
 numSamp = size(data, 1); %#ok<*NODEF>
 
-minTime = min(time(time >= 0));
+if ~isfield(options, 'minTime')
+    minTime = min(time(time >= 0));
+else
+    minTime = options.minTime;
+end
 
 if options.overLap
     erpWin = minTime:20:options.maxTime;
-%     specWin = minTime:20:options.maxTime;
+    %     specWin = minTime:20:options.maxTime;
 else
     erpWin = minTime:options.erpWinSize:options.maxTime;
-%     specWin = minTime:options.specWinSize:options.maxTime;
+    %     specWin = minTime:options.specWinSize:options.maxTime;
 end
 
 numErp = length(erpWin);

@@ -1,15 +1,15 @@
 % Plot sliding classification data
-numWinWidths = 4;
-numERPwin = 40;
+numWinWidths = 1;
+numERPwin = 42;
 % numFreqTypes = 3;
 % numFreqWin = 40;
 
-timeForERP = 0:20:780;
+timeForERP = 650:20:1480;
 % timeForFreq = 0:20:780;
 
 colors = 'rgbm';
 
-filesToPlot = dir('../../compEEG-data/results/CompEEG_CV_*_Hilbert-theta_Slide_All.mat');
+filesToPlot = dir('../../compEEG-data/results/CompEEG_CV_*_Hilbert-alpha_Slide_All_Late.mat');
 numSub = length(filesToPlot);
 
 collectERP = nan(numERPwin, numWinWidths, numSub);
@@ -22,7 +22,7 @@ for s = 1:numSub
     %     subFig = figure;
     load(['../../compEEG-data/results/' filesToPlot(s).name]);
     
-    collectERP(:, :, s) = subAcc(1:numERPwin, :);%mean(subAcc(1:numERPwin, :), 2);
+    collectERP(:, :, s) = subAcc(1:numERPwin);%mean(subAcc(1:numERPwin, :), 2);
 %     
 %     for f = 1:numFreqTypes
 %         collectFreq(f, :, :, s) = ...
@@ -50,7 +50,7 @@ for s = 1:numSub
     %     subFStd = [];
     
     
-    %     legend({'\theta', '\theta', '\theta'});
+    %     legend({'\alpha', '\alpha', '\alpha'});
     %
     %     for freq = 1:numFreqTypes
     %         errorbar(timeForFreq, squeeze(collectFreq(freq,:,s)), subFStd(:,freq), colors(freq));
@@ -74,29 +74,29 @@ erpSubAvg = squeeze(mean(collectERP, 3));
 erpSubStd = (squeeze(std(collectERP, 0, 3)))./sqrt(numSub);
 f = figure;
 hold on;
-for wWd = 1:4
+for wWd = 1
     plot(timeForERP, erpSubAvg(:, wWd), colors(wWd));
 end
 legend({'50ms', '100ms', '150ms', '200ms'});
-line([-20, 800], [0.5, 0.5], 'Color', 'b');
+line([min(timeForERP) - 20, max(timeForERP)+20], [0.5, 0.5], 'Color', 'b');
 % line([240 240], [0.45, 0.7], 'Color', 'k');
-for wWd = 1:4
+for wWd = 1
     errorbar(timeForERP, erpSubAvg(:, wWd), erpSubStd(:,wWd), colors(wWd));
 end
 xlabel('Start Time of Window Relative to Onset (ms)');
-xlim([-20, 800]);
+xlim([min(timeForERP) - 20, max(timeForERP)+20]);
 ylim([0.45, 0.7]);
 
 ylabel('Classification Accuracy');
 title(sprintf('Competition accuracy over time\n%s', ...
-    'using different sized window averages of \theta power'));
-saveas(f, '../../compEEG-data/results/figures/Hilbert-theta_allSub_allWidth.png');
+    'using different sized window averages of \alpha power'));
+saveas(f, '../../compEEG-data/results/figures/Hilbert-alpha_allSub_Late.png');
 % 
 % freqSubAvg = squeeze(mean(collectFreq, 4));
 % freqSubStd = (squeeze(std(collectFreq, 0, 4)))./sqrt(numSub);
 % 
 % f = figure;
-% freqTitles = {'\theta', '\theta', '\theta'};
+% freqTitles = {'\alpha', '\alpha', '\alpha'};
 % for freq = 1:numFreqTypes
 %     subplot(numFreqTypes, 1, freq);
 %     hold on;

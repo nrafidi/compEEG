@@ -8,11 +8,11 @@ subjects = {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
     'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
     'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 numSub = length(subjects);
-numFeatWins = 40;%magic
-winSizeOptions = 50:50:200;
+numFeatWins = 42;%magic
+winSizeOptions = 50;
 numSizes = length(winSizeOptions);
 
-freqName = 'beta';
+freqName = 'alpha';
 
 doZ = 1;
 fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
@@ -31,6 +31,8 @@ for s = 1:length(subjects)
     else
         options = struct;
         options.overLap = true;
+        options.maxTime = 1500;
+        options.minTime = 650;
         for w = 1:numSizes
             options.erpWinSize = winSizeOptions(w);
             options.specWinSize = winSizeOptions(w);
@@ -68,7 +70,7 @@ for s = 1:length(subjects)
             
         end
         subAcc = squeeze(subAccs(s,:,:));
-        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' sub '_Hilbert-' freqName '_Slide_All.mat'],...
+        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_' sub '_Hilbert-' freqName '_Slide_All_Late.mat'],...
             'subAcc');
         fprintf('Subject %s succeeded.\n', sub);
         
@@ -76,7 +78,7 @@ for s = 1:length(subjects)
         if ~exist(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'], 'dir')
             mkdir(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/']);
         end
-        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/CompEEG_CV_Slide_Hilbert-' freqName '_Models.mat'],...
+        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/CompEEG_CV_Slide_Hilbert-' freqName '_Models_Late.mat'],...
             'subModel');
     end
 end
