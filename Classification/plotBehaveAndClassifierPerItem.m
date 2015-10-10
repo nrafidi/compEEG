@@ -7,7 +7,7 @@ numSub = length(subjects);
 item = 1;
 
 behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
-figureRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/';
+figureRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/singleTrial/';
 stimRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-stim/';
 fid = fopen([stimRoot 'KR_test.txt']);
 swahili = textscan(fid, '%s');
@@ -16,26 +16,31 @@ swahili = swahili{1};
 potentialResponses = [0 0 0 1; 0 0 1 1;  0 1 1 1; 1 1 1 1];
 respNames = {'R4', 'R3R4', 'R2R3R4', 'R1R2R3R4'};
 
-for r = 1:length(respNames)
-    if ~exist([figureRoot respNames{r} '_corr'], 'dir')
-        mkdir([figureRoot respNames{r} '_corr']);
-    end
-    if ~exist([figureRoot respNames{r} '_inc'], 'dir')
-        mkdir([figureRoot respNames{r} '_inc']);
-    end
-end
+% for r = 1:length(respNames)
+%     if ~exist([figureRoot respNames{r} '_corr'], 'dir')
+%         mkdir([figureRoot respNames{r} '_corr']);
+%     end
+%     if ~exist([figureRoot respNames{r} '_inc'], 'dir')
+%         mkdir([figureRoot respNames{r} '_inc']);
+%     end
+% end
 
 numPotResp = size(potentialResponses, 1);
 krTrajByResponse = cell(numPotResp, 2);
 for s = 1:numSub
     sub = subjects{s};
-    
+    if ~exist([figureRoot '/' sub '/'], 'dir')
+        mkdir([figureRoot '/' sub '/']);
+    end
     load([behaveDataRoot '/' sub '/' sub '_answerTraj.mat']);
     load(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' ...
-        sub '/KRanalysis.mat']);
+        sub '/KRanalysis_SlidingFeat_lateComp.mat']);
     
+    krTraj = squeeze(mean(krTraj{1}(:, :, 18:26), 3));
+    krLabels = krLabels{1};
+    percCorr = floor(100*sum(krLabels)/length(krLabels));
     krLabels = logical(krLabels);
-    responseTraj(skippedItems,:) = []; %#ok<*SAGROW>
+%     responseTraj(skippedItems,:) = []; %#ok<*SAGROW>
     subSwahili = swahili;
     subSwahili(skippedItems) = [];
     
@@ -60,9 +65,9 @@ for s = 1:numSub
             end
             xlim([0.9, 4.1]);
             ylim([-0.1 1.1]);
-            title([sub ' ' subSwahili{corrItems(cItem)}]);
+            title(sprintf('%s %s\n%d', sub, subSwahili{corrItems(cItem)}, percCorr));
             hold off;
-            saveas(f, [figureRoot respNames{rowID} '_corr/' sub '_' subSwahili{corrItems(cItem)} '.png']);
+            saveas(f, [figureRoot '/' sub '/' sub '_' respNames{rowID} '_corr_' subSwahili{corrItems(cItem)} '.png']);
             close(f);
         end
     end
@@ -85,9 +90,9 @@ for s = 1:numSub
             end
             xlim([0.9, 4.1]);
             ylim([-0.1 1.1]);
-            title([sub ' ' subSwahili{incItems(iItem)}]);
+            title(sprintf('%s %s\n%d', sub, subSwahili{incItems(iItem)}, percCorr));
             hold off;
-            saveas(f, [figureRoot respNames{rowID} '_inc/' sub '_' subSwahili{corrItems(cItem)} '.png']);
+            saveas(f, [figureRoot '/' sub '/' sub '_' respNames{rowID} '_cinc_' subSwahili{incItems(iItem)} '.png']);
             close(f);
         end
     end
