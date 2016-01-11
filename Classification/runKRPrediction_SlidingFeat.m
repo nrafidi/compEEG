@@ -11,7 +11,8 @@ fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'];
 if ~exist(fResPrefix, 'dir')
     mkdir(fResPrefix);
 end
-fSuffix = '_Vis_Hilbert-theta_Epochs_Features_Overlap.mat';
+% fSuffix = '_Vis_Hilbert-theta_Epochs_Features_Overlap.mat';
+fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_preStim.mat';
 
 rng('shuffle');
 
@@ -21,8 +22,9 @@ if exist(compFname, 'file')
 else
     compOpt = struct;
     compOpt.overLap = true;
-    
-    [featData, labels] = extractFeatures(compFname(1:(end-21)), compOpt);
+    compOpt.minTime = -300;
+    [featData, labels] = extractFeatures(compFname(1:(end-29)), compOpt);
+    save(compFname, 'featData', 'labels');
 end
 featData = double(featData);
 [compData, mu, sigma] = zscore(featData);
@@ -32,7 +34,7 @@ compWinToUse = (compWin*numChan + 1):((compWin+1)*numChan);
 
 B = logReg(compData(:,compWinToUse), compLabels, [1 10], false);
 
-old_krLabels = krLabels;
+% old_krLabels = krLabels;
 krData = krData(krLabels(:,1) == 1, :);
 krData = (krData - repmat(mu, size(krData, 1), 1))./repmat(sigma, size(krData, 1), 1);
 krLabels = krLabels(krLabels(:,1) ==1, 2);

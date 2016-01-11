@@ -29,6 +29,9 @@ end
 % else
 %     oddblock = true;
 % end
+%AA = false, BB = false, DD = true, EE = true, F = true, GG = false,
+%HH = true, JJ = true, K = true, M = true, N = true, O = true, R = true, 
+%S = true, T = true, U = true, V = true, X = true, Y = true, Z = true
 oddblock = true;
 collectLabels = [];
 prevprevprevEvent = nan;
@@ -49,17 +52,18 @@ for i = 2:numEpochs
             labelInds(i-1) = false;
         end
         oddblock = ~oddblock;
-%         keyboard;
+        
     else
         labelInds(i) = true;
         collectLabels = cat(1, collectLabels, currEvent);
         
-%         if length(unique(collectLabels)) < (length(collectLabels) - 1)
-%             oddblock = ~oddblock;
-%             collectLabels = [];
-% %             keyboard;
-%         end
-%         
+        % Comment out for subject R
+        if length(unique(collectLabels)) < (length(collectLabels) - 1)
+            oddblock = ~oddblock;
+            collectLabels = [];
+%             keyboard;
+        end
+        
         stimLabels(i, 2) = currEvent;
         stimLabels(i, 1) = double(oddblock);
     end

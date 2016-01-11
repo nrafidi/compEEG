@@ -148,21 +148,27 @@ elseif options.doRef
 end
 
 % Parse into Epochs and remove Baseline
-if ~exist([saveInterDir runningFname '_Epochs_Base.set'], 'file')
+% if ~exist([saveInterDir runningFname '_Epochs_Base.set'], 'file')
+if ~exist([saveInterDir runningFname '_Epochs.set'], 'file')
+%     keyboard;
     EEG = pop_epoch( EEG, {  }, epochWin, 'newname', [EEG.setname '_Epochs'], 'epochinfo', 'yes');
     EEG = eeg_checkset( EEG );
-    EEG = pop_rmbase( EEG, [-300.7812             0]);
-    EEG.setname=[EEG.setname '_Epochs_Base'];
-    saveFname = [saveFname '_Epochs_Base'];
+%     EEG = pop_rmbase( EEG, [-300.7812             0]);
+%     EEG.setname=[EEG.setname '_Epochs_Base'];
+%     EEG.setname=[EEG.setname '_Epochs'];
+%     saveFname = [saveFname '_Epochs_Base'];
+    saveFname = [saveFname '_Epochs'];
     oldSetName = EEG.setname;
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 else
-    runningFname = [runningFname '_Epochs_Base'];
+%     runningFname = [runningFname '_Epochs_Base'];
+    runningFname = [runningFname '_Epochs'];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
 % Run ICA
 if options.runICA && ~exist([saveInterDir runningFname '_ICA1-2.set'], 'file')
+%     keyboard;
     fprintf('Running ICA\n');
     tic
     EEG = pop_runica(EEG, 64, 'icatype', 'sobi');

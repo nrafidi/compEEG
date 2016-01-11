@@ -6,6 +6,7 @@ numSub = length(subjects);
 
 
 timePoints = -280:20:780;
+preStimTime = timePoints < 0;
 numTimePoints = length(timePoints);
 winWidths = 50;
 numWinWidths = length(winWidths);
@@ -23,6 +24,8 @@ for s = 1:numSub
     trajInds = logical(responseTraj);
     for r = 1:numRounds
         for w = 1:numWinWidths
+            baseLineSig = squeeze(mean(krTraj{w}(:,r,preStimTime), 3));
+            krTraj{w}(:,r,:) = krTraj{w}(:,r,:) - repmat(baseLineSig, 1,1,numTimePoints);
             labels = logical(krLabels{w});
             trajCorr(s, r, w, :) = squeeze(mean(krTraj{w}(trajInds(:,r), r, :)));
             trajInc(s, r, w, :) = squeeze(mean(krTraj{w}(~trajInds(:,r), r, :)));
@@ -50,14 +53,14 @@ for r = 1:numRounds
         legend({'Correct', 'Incorrect'});
         errorbar(timePoints, meanTrajCorr, stdTrajCorr, 'Color', 'b');
         errorbar(timePoints, meanTrajInc, stdTrajInc, 'Color', 'r');
-        ylim([0.3 0.7]);
+        ylim([-0.2 0.2]);
         xlim([min(timePoints), max(timePoints)]);
         ylabel('P(C)');
         xlabel('Start of Window (ms)');
         title(sprintf('Window Size %d', winWidths(w)));
     end
     suptitle(sprintf('Round %d', r));
-    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_IC_round%d_preStim.png', r));
+    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_IC_round%d_preStim_Base.png', r));
 end
 
 %Subseqeuently corr/inc on same plot
@@ -77,14 +80,14 @@ for r = 1:numRounds
         legend({'Remembered', 'Forgotten'});
         errorbar(timePoints, meanTrajCorr, stdTrajCorr, 'Color', 'b');
         errorbar(timePoints, meanTrajInc, stdTrajInc, 'Color', 'r');
-        ylim([0.3 0.7]);
+        ylim([-0.2 0.2]);
         xlim([min(timePoints), max(timePoints)]);
         ylabel('P(C)');
         xlabel('Start of Window (ms)');
         title(sprintf('Window Size %d', winWidths(w)));
     end
     suptitle(sprintf('Round %d', r));
-    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_RF_round%d_preStim.png', r));
+    saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_RF_round%d_preStim_Base.png', r));
 end
 
 %All
@@ -108,7 +111,7 @@ for w = 1:numWinWidths
     for r = 1:numRounds
         errorbar(timePoints, meanTrajAll{r}, stdTrajAll{r}, 'Color', colors(r));
     end
-    ylim([0.3 0.7]);
+    ylim([-0.2 0.2]);
     xlim([min(timePoints), max(timePoints)]);
     ylabel('P(C)');
     xlabel('Start of Window (ms)');
@@ -116,7 +119,7 @@ for w = 1:numWinWidths
     
 end
 suptitle('All Samples');
-saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_all_preStim.png'));
+saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_all_preStim_Base.png'));
 
 f = figure;
 colors = 'rgbm';
@@ -132,7 +135,7 @@ for w = 1:numWinWidths
         errorbar(timePoints, meanTrajCorr, stdTrajCorr, 'Color', colors(r));
         
     end
-    ylim([0.3 0.7]);
+    ylim([-0.2 0.2]);
     xlim([min(timePoints), max(timePoints)]);
     ylabel('P(C)');
     xlabel('Start of Window (ms)');
@@ -140,7 +143,7 @@ for w = 1:numWinWidths
     legend({'Round 1', 'Round 2', 'Round 3', 'Round 4'});
 end
 suptitle('Subsequently Remembered');
-saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_Remembered_preStim.png'));
+saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_Remembered_preStim_Base.png'));
 
 f = figure;
 colors = 'rgbm';
@@ -156,7 +159,7 @@ for w = 1:numWinWidths
         errorbar(timePoints, meanTrajInc, stdTrajInc, 'Color', colors(r));
         
     end
-    ylim([0.3 0.7]);
+    ylim([-0.2 0.2]);
     xlim([min(timePoints), max(timePoints)]);
     ylabel('P(C)');
     xlabel('Start of Window (ms)');
@@ -164,4 +167,4 @@ for w = 1:numWinWidths
     legend({'Round 1', 'Round 2', 'Round 3', 'Round 4'});
 end
 suptitle('Subsequently Forgotten');
-saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_Forgotten_preStim.png'));
+saveas(f, sprintf('../../compEEG-data/results/figures/krSlide_Forgotten_preStim_Base.png'));

@@ -55,12 +55,12 @@ end
 
 load(loadFname);
 
-numSamp = size(data, 1); %#ok<*NODEF>
+% numSamp = size(data, 1); %#ok<*NODEF>
 
 if ~isfield(options, 'minTime')
     minTime = min(time(time >= 0));
 else
-    minTime = options.minTime;
+    minTime = min(time(time >= options.minTime));
 end
 
 if options.overLap

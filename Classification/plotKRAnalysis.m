@@ -15,14 +15,15 @@ end
 %     'R2, R3', 'R2, R4', 'R3, R4', 'R1, R2, R3', 'R1, R2, R4', ...
 %     'R1, R3, R4', 'R2, R3, R4', 'R1, R2, R3, R4'};
 
-titles = {'SlopeCorrOnly'};%{'Mean R1R2 - Mean R3R4'};%{'350-600ms-R3R4'};%{'Slope From R1-R4 at 350-600ms'};%;%;{'650-800ms - R4'}
+titles = {'Mean R1R2 - Mean R3R4'};%{};%{'350-600ms-R3R4'};%{'Slope From R1-R4 at 350-600ms'};%;%;{'650-800ms - R4'}
 for iTuple = 1:numTuples
     if numTuples > 1
     subplot(4, 4, iTuple);
     end
     hist(populationAccHist(:,iTuple));
-    title(titles{iTuple});
-    xlim([0.1, 0.9]);
+    percentAbove = sum(populationAccHist(:,iTuple) > 0.5)/length(populationAccHist(:,iTuple));
+    title(sprintf('%s\nPercent above chance = %0.0f', titles{iTuple}, 100*percentAbove));
+    xlim([0.35, 0.65]);
     hold on;
     line([meanTrueAcc(iTuple) meanTrueAcc(iTuple)], ...
         [0 600]);

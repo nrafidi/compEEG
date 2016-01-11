@@ -13,10 +13,11 @@ function [ ROC_X, ROC_Y, ROC_T, AUCs] = ...
 %       prediction of krLabels from krTraj for each of the t subset tuples of
 %       the p covariates.
 
+krTraj = krTraj./max(krTraj);
 
 [ROC_X, ROC_Y, ...
         ROC_T, AUCs] = ...
-        perfcurve(krLabels, krTraj, 0);
+        perfcurve(krLabels, krTraj, 1);
 
 
 end
