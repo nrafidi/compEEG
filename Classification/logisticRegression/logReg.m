@@ -49,10 +49,11 @@ function weights = gradDesc(X, Y, lambda, regBias, varargin)
 [N, F] = size(X);
 % step = 1e-2;
 % step = 1;
-eps = (1/sqrt(N))*0.01;
+eps = (1/sqrt(N))*0.01; %was 0.01
 step = eps/10;
 tr_prev = 10e6*N;
 tr = tr_prev/N;
+tr_tracker = nan(2000, 1);
 if nargin > 4
     weights = varargin{1};
 else
@@ -77,6 +78,7 @@ else
     weights(end+1,:) = 0;
     weights_prev = weights;
     while abs(tr - tr_prev) > eps
+        
         times = times + 1;
         
         % Accelerated code
@@ -103,13 +105,15 @@ else
         
         tr_prev = tr;
         tr = norm(Y - logPred(X, weights, regBias));
-        
-        if times > 1000
+        tr_tracker(times) = tr;
+        if times > 2000
             break
         end
     end
-    %         disp(tr)
-    %         disp(times)
+%     figure;
+%     plot(tr_tracker(1:times));
+%             disp(tr)
+%             disp(times)
 end
 end
 
