@@ -117,6 +117,7 @@ if ~isnan(options.HP) && ~isnan(options.LP) && ...
     EEG = eeg_checkset( EEG );
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif ~isnan(options.HP) && ~isnan(options.LP)
+    saveFname = [saveFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     runningFname = [runningFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
@@ -133,6 +134,7 @@ if ~isnan(options.N) && ...
     EEG = eeg_checkset( EEG );
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif ~isnan(options.N)
+    saveFname = [saveFname '_N' num2str(options.N)];
     runningFname = [runningFname '_N' num2str(options.N)];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
@@ -148,6 +150,7 @@ if options.doRef && ~exist([saveInterDir runningFname '_Ref.set'], 'file')
     EEG = eeg_checkset( EEG );
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif options.doRef
+    saveFname = [saveFname '_Ref'];
     runningFname = [runningFname '_Ref'];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
@@ -164,6 +167,7 @@ if options.doBase
         oldSetName = EEG.setname;
         EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
     else
+        saveFname = [saveFname '_Epochs_Base'];
         runningFname = [runningFname '_Epochs_Base'];
         EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
     end
@@ -176,6 +180,7 @@ else
         EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
     else
         runningFname = [runningFname '_Epochs'];
+        saveFname = [saveFname '_Epochs'];
         EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
     end
 end
@@ -208,6 +213,7 @@ if (options.runICA || options.useICA) && ...
     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',saveInterDir);
 elseif options.runICA
     runningFname = [runningFname '_ICA1-2'];
+    saveFname = [saveFname '_ICA1-2'];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
@@ -235,6 +241,6 @@ save([saveFname '.mat'], 'data', 'labels', 'time', 'preProcOptions');
 
 [featData, labels, winTime, featOptions] = extractFeatures([saveFname '.mat']);
 
-save([saveFname '_Features_Time.mat'], 'featData', 'labels', 'featOptions', 'winTime');
+save([saveFname '_Features_Overlap_Time.mat'], 'featData', 'labels', 'featOptions', 'winTime');
 
 end
