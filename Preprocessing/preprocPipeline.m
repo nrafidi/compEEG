@@ -1,4 +1,4 @@
-function [featData, labels, options, featOptions] = preprocPipeline(sub, experi, varargin)
+function [featData, labels, winTime, options, featOptions] = preprocPipeline(sub, experi, varargin)
 % preprocPipeline: a preprocessing pipeline for CompEEG and CompEEG__KR
 % data. Runs a user-selected set of preprocessing procedures (set with the
 % optional struct options) and then extracts the features for use in
@@ -17,6 +17,7 @@ function [featData, labels, options, featOptions] = preprocPipeline(sub, experi,
 %       N: the center of the notch filter to apply (nan if none)
 %       doRef: set to true to rereference electrodes to the group mean
 %       (recommended)
+%       doBase: baseline correct using prestimulus data (recommended)
 %       runICA: compute ICA weights and subtract to remove blinks
 %
 % Outputs:
@@ -62,6 +63,10 @@ end
 % Re-reference electrodes to group mean
 if ~isfield(options, 'doRef')
     options.doRef = true;
+end
+% Baseline Correct Epochs
+if ~isfield(options, 'doBase')
+    options.doBase = true;
 end
 % Do ICA from scratch
 if ~isfield(options, 'runICA')
@@ -148,27 +153,37 @@ elseif options.doRef
 end
 
 % Parse into Epochs and remove Baseline
-% if ~exist([saveInterDir runningFname '_Epochs_Base.set'], 'file')
-if ~exist([saveInterDir runningFname '_Epochs.set'], 'file')
-%     keyboard;
-    EEG = pop_epoch( EEG, {  }, epochWin, 'newname', [EEG.setname '_Epochs'], 'epochinfo', 'yes');
-    EEG = eeg_checkset( EEG );
-%     EEG = pop_rmbase( EEG, [-300.7812             0]);
-%     EEG.setname=[EEG.setname '_Epochs_Base'];
-%     EEG.setname=[EEG.setname '_Epochs'];
-%     saveFname = [saveFname '_Epochs_Base'];
-    saveFname = [saveFname '_Epochs'];
-    oldSetName = EEG.setname;
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+if options.doBase
+    if ~exist([saveInterDir runningFname '_Epochs_Base.set'], 'file')
+        EEG = pop_epoch( EEG, {  }, epochWin, 'newname', [EEG.setname '_Epochs'], 'epochinfo', 'yes');
+        EEG = eeg_checkset( EEG );
+        EEG = pop_rmbase( EEG, [-300.7812             0]);
+        EEG.setname=[EEG.setname '_Epochs_Base'];
+        saveFname = [saveFname '_Epochs_Base'];
+        
+        oldSetName = EEG.setname;
+        EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+    else
+        runningFname = [runningFname '_Epochs_Base'];
+        EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
+    end
 else
-%     runningFname = [runningFname '_Epochs_Base'];
-    runningFname = [runningFname '_Epochs'];
-    EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
+    if ~exist([saveInterDir runningFname '_Epochs.set'], 'file')
+        EEG = pop_epoch( EEG, {  }, epochWin, 'newname', [EEG.setname '_Epochs'], 'epochinfo', 'yes');
+        EEG = eeg_checkset( EEG );
+        saveFname = [saveFname '_Epochs'];
+        oldSetName = EEG.setname;
+        EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+    else
+        runningFname = [runningFname '_Epochs'];
+        EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
+    end
 end
+
 
 % Run ICA
 if options.runICA && ~exist([saveInterDir runningFname '_ICA1-2.set'], 'file')
-%     keyboard;
+    %     keyboard;
     fprintf('Running ICA\n');
     tic
     EEG = pop_runica(EEG, 64, 'icatype', 'sobi');
@@ -199,17 +214,18 @@ end
 % Create .mat file
 
 if strcmp(experi, 'CompEEG')
-    if sub < 'F'
+    if any(sub < 'F') && length(sub) == 1
         [data, labels, time] = getDataLabels_pilot(EEG); %#ok<*ASGLU>
     else
         [data, labels, time] = getDataLabels_Comp(EEG);
     end
 else
-    [data, labels, time] = getDataLabels_KR(EEG);
+    [data, labels, time] = getDataLabels_KR(sub, EEG);
 end
 %
 disp(sum(labels(:,1) == 1));
 bar(labels(:,1));
+title(sub);
 % keyboard;
 
 preProcOptions = options; %#ok<*NASGU>
@@ -217,8 +233,8 @@ save([saveFname '.mat'], 'data', 'labels', 'time', 'preProcOptions');
 
 % Extract Relevant Features
 
-[featData, labels, featOptions] = extractFeatures([saveFname '.mat']);
+[featData, labels, winTime, featOptions] = extractFeatures([saveFname '.mat']);
 
-save([saveFname '_Features.mat'], 'featData', 'labels', 'featOptions');
+save([saveFname '_Features_Time.mat'], 'featData', 'labels', 'featOptions', 'winTime');
 
 end

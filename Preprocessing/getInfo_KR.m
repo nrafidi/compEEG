@@ -1,18 +1,19 @@
-% subjects = {'AA', 'BB', 'DD', 'F', 'EE', 'GG', 'HH', 'JJ', ...
-%     'K', 'M', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z', 'N'};
+subjects = {'AA', 'BB', 'DD', 'F', 'EE', 'GG', 'HH', 'JJ', ...
+    'K', 'M', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z', 'N'};
 
-subjects = {'N'};
+% subjects = {'N'};
 
 numSub = length(subjects);
 behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
 fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
 fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2.mat';
 KRanswer = importdata('/Users/nrafidi/Documents/MATLAB/compEEG-stim/KR_answer.txt');
-winSizeOptions = [50, 100];
+winSizeOptions = 50;%[50, 100];
 numSizes = length(winSizeOptions);
 options = struct;
 options.overLap = true;
 options.minTime = -100;
+scores = nan(numSub, 1);
 for s = 1:numSub
     sub = subjects{s};
     disp(sub);
@@ -38,7 +39,7 @@ for s = 1:numSub
         for a = 1:numQ
             corrAnswers(a) = strcmpi(answerList{a}, KRanswer{a});
         end
-        
+        scores(s) = sum(corrAnswers)/numQ;
         uniqueItems = 1:60;
         skippedItems = [];
         correctItems = uniqueItems(corrAnswers);
@@ -66,6 +67,6 @@ for s = 1:numSub
     end
     responseTraj = newResponseTraj;
     
-    save(fname, 'krData', 'krLabels', 'skippedItems', 'responseTraj');
+%     save(fname, 'krData', 'krLabels', 'skippedItems', 'responseTraj');
     fprintf('%s Complete\n', sub);
 end
