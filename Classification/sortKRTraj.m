@@ -20,9 +20,9 @@ end
 itemTrajCorr = itemTraj(corrAnswers, :);
 itemTrajInc = itemTraj(~corrAnswers, :);
 
-figure;
-plot(1:4, [nanmean(itemTrajCorr); nanmean(itemTrajInc)]);
-legend({'Correct', 'Incorrect'});
+% figure;
+% plot(1:4, [nanmean(itemTrajCorr); nanmean(itemTrajInc)]);
+% legend({'Correct', 'Incorrect'});
 
 save([fResPrefix sub '_itemTraj_Answers_logit.mat'], 'itemTrajCorr', 'itemTrajInc', 'corrAnswers');
 

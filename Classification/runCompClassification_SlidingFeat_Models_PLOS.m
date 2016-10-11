@@ -1,6 +1,3 @@
-% Runs cross-validated classification within subject for the competition
-% data
-
 addpath ./logisticRegression/
 addpath ../Preprocessing/
 
@@ -8,6 +5,7 @@ subjects = {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
     'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
     'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 numSub = length(subjects);
+numFeatWins = 54;
 winSizeOptions = 50;%:50:200;
 doZ = 1;
 fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
@@ -24,14 +22,11 @@ for s = 1:length(subjects)
     if ~exist(loadFname, 'file')
         fprintf('Subject %s failed.\n', sub);
     else
-        options = struct;
-        options.overLap = true;
-        options.erpWinSize = winSizeOptions;
-        [featData, labels, ~] = extractFeatures(loadFname, options);
-        
+        load(loadFname);
         
         Y = labels(:,1);
-        N = size(featData, 1);
+        [N, W] = size(featData);
+        numFeatWins = W/64;
         
         for p = 1:numFeatWins
             startInd = (p-1)*64 + 1;
@@ -54,11 +49,11 @@ for s = 1:length(subjects)
         if ~exist(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'], 'dir')
             mkdir(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/']);
         end
-        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/CompEEG_CV_Slide_Models.mat'],...
+        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/CompEEG_CV_Slide_Models_PLOS.mat'],...
             'subModel');
         fprintf('Subject %s succeeded.\n', sub);
     end
 end
 
-save('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_Slide_Models.mat',...
+save('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_Slide_Models_PLOS.mat',...
     'subModels');

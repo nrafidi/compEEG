@@ -1,5 +1,5 @@
 function [ ROC_X, ROC_Y, ROC_T, AUCs ] = runTupled_KR( krTraj, krLabels, ...
-    krResp, foldsToUse)
+   foldsToUse)
 % runTupled_KR: Attempts to predict krLabels from the given krTraj for all
 %   possible subsets of the trajectory covariates
 %
@@ -36,9 +36,10 @@ for iTuple = 1:numTuples
         
         % Determine which samples are such that all members of the tuple
         % have correct responses
-        samplesToUse = all(krResp(:,tuple(iWithinTuple,:)), 2);
+%         samplesToUse = all(krResp(:,tuple(iWithinTuple,:)), 2);
 %         fprintf('Proportion of correct answers in training set = %d\n', ...
 %             sum(krLabels(foldsToUse & samplesToUse))/sum(foldsToUse & samplesToUse));
+samplesToUse = true(size(foldsToUse, 1),1);
         for indTrain = 1:2
             if indTrain == 2
                 foldsToUse = ~foldsToUse;
@@ -62,7 +63,7 @@ for iTuple = 1:numTuples
             
             [ROC_X{indTrain, indTuple}, ROC_Y{indTrain, indTuple}, ...
                 ROC_T{indTrain, indTuple}, AUCs(indTrain,indTuple)] = ...
-                perfcurve(krLabels(~foldsToUse & samplesToUse), P, 1);
+                perfcurve(krLabels(~foldsToUse & samplesToUse), P, true);
             
             %double(Yhat == krLabels(~foldsToUse));
             
