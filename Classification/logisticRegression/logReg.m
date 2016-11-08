@@ -14,7 +14,7 @@ if chooseLambda(1) == 1
     % Choose lambda with k-fold cross validation (specified by the second
     % entry of chooseLambda
     folds = crossvalind('Kfold', size(X,1), chooseLambda(2));
-    lambdas = fliplr([1e-6 1e-5 1e-4 1e-3 1e-2 .1 1 10 100 1000]);
+    lambdas = fliplr([1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 .1 1 10 1e2 1e3 1e4]);
     cverr = zeros(size(lambdas));
     lambFolds = chooseLambda(2);
     if nargin > 4

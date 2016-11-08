@@ -20,7 +20,7 @@
 
 function rslt =  nbayes_apply(examples, model, varargin)
     
-    if length(varargin)>0
+    if nargin > 2
         selectedFeats=varargin{1};
     else
         selectedFeats=0;

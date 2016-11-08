@@ -10,8 +10,8 @@ numTimePoints = length(timePoints);
 numRounds = 4;
 
 trajAll = [];%nan(numSub, numRounds, numTimePoints);
-trajCorr = cell(4, 1);%nan(numSub, numRounds, numTimePoints);
-trajInc = cell(4, 1);%nan(numSub, numRounds, numTimePoints);
+trajCorr = cell(numRounds, 1);%nan(numSub, numRounds, numTimePoints);
+trajInc = cell(numRounds, 1);%nan(numSub, numRounds, numTimePoints);
 trajSubCorr = [];%nan(numSub, numRounds, numTimePoints);
 trajSubInc = [];%nan(numSub, numRounds, numTimePoints);
 for s = 1:numSub

@@ -16,11 +16,11 @@
 % History:
 % Created 3/2014 by Tom 
 % 3/8/2014 added optional argument <selectedFeatures> to allow using just a subset of mus, sigmas
-
+% 11/9/2015 Modified calculation of normalizer to avoid underflow, vectorized and generally cleaned up - Nicole
 function logp = loggaussian(x,mu,sigma, varargin)
     
-    if length(varargin)==0 || isequal(0,varargin{1})
-        selectedFeats=[1:length(x)];
+    if isempty(varargin) || isequal(0,varargin{1})
+        selectedFeats= 1:length(x);
     else
         selectedFeats=varargin{1};
     end    
@@ -34,11 +34,12 @@ function logp = loggaussian(x,mu,sigma, varargin)
     if ignoreNormalizer
         logp=0;
     else
-        logp= log((1/sqrt(2*pi))^length(selectedFeats));
+        logp= length(selectedFeats)*log((1/sqrt(2*pi)));
     end
-    
-    for i=selectedFeats
-        logp = logp - log(sigma(i)) -0.5 * ( ((x(i)-mu(i)) / sigma(i)) ^2) ;
+    if any(sigma == 0)
+%         fprintf('Zero variance???\n');
+%         keyboard;
+        sigma = sigma + eps;
     end
-    
+    logp = logp - sum(log(sigma(selectedFeats)) + 0.5*((x(selectedFeats) - mu(selectedFeats))./sigma(selectedFeats)).^2);
     
