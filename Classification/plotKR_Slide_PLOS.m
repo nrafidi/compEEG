@@ -3,7 +3,7 @@ clear;
 subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
     'K', 'M', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z', 'N'};
 numSub = length(subjects);
-compWinToUse = 38;%17, 24:28, 38
+compWinToUse = 17;%17, 24:28, 38
 
 timePoints = -100:20:960;
 numTimePoints = length(timePoints);
@@ -29,7 +29,7 @@ for s = 1:numSub
     end
 end
 
-%Corr/inc on same plot
+%% Corr/inc on same plot
 for r = 1:numRounds
     f = figure;
     meanTrajCorr = squeeze(nanmean(trajCorr{r}, 1));
@@ -170,3 +170,29 @@ legend({'Remembered', 'Forgotten'});
 title(sprintf('Mean R3 and R4 Competition Level over Time\nTrained on Comp Time %d ms', timePoints(compWinToUse)));
 set(gcf, 'Color', 'w');
 export_fig(f, sprintf('../../compEEG-data/results/figures/krSlide_RvF_MeanR3R4_CWin%d.pdf', compWinToUse));
+
+%% MeanDiff
+f = figure;
+colors = 'rb';
+hold on;
+meanTrajCorr12 = squeeze(nanmean(trajSubCorr(:,1:2,:), 2));
+meanTrajCorr34 = squeeze(nanmean(trajSubCorr(:,3:4,:), 2));
+meanTrajCorr = nanmean(meanTrajCorr12 - meanTrajCorr34);
+stdTrajCorr = nanstd(meanTrajCorr12 - meanTrajCorr34,0,1)./sqrt(size(trajSubCorr, 1));
+errorbar(timePoints, meanTrajCorr, stdTrajCorr, 'Color', colors(1));
+meanTrajInc12 = squeeze(nanmean(trajSubInc(:,1:2,:), 2));
+meanTrajInc34 = squeeze(nanmean(trajSubInc(:,3:4,:), 2));
+meanTrajInc = nanmean(meanTrajInc12 - meanTrajInc34);
+stdTrajInc = nanstd(meanTrajInc12 - meanTrajInc34,0,1)./sqrt(size(trajSubInc, 1));
+errorbar(timePoints, meanTrajInc, stdTrajInc, 'Color', colors(2));
+
+
+ylim([-0.1 0.1]);
+xlim([min(timePoints), max(timePoints)]);
+line([min(timePoints), max(timePoints)], [0, 0], 'LineStyle', '--', 'Color', 'k');
+ylabel('P(C)');
+xlabel('Start of Window Relative to Stimulus Onset (ms)');
+legend({'Remembered', 'Forgotten'});
+title(sprintf('MeanR1R2-MeanR3R4 Competition Level over Time\nTrained on Comp Time %d ms', timePoints(compWinToUse)));
+set(gcf, 'Color', 'w');
+export_fig(f, sprintf('../../compEEG-data/results/figures/krSlide_RvF_MeanDiff_CWin%d.pdf', compWinToUse));

@@ -12,20 +12,19 @@ krRespList = cell(numSub, 1);
 krLabelList = cell(numSub, 1);
 withinSubAUC = nan(numSub, 1);
 accuracyList = [];
-% compWinToUse = 24;
-numDraws = 20;
+numDraws = 1000;
 doAUC = true;
 doSubMeans = false;
-savePlots = false;
+savePlots = true;
 
-featureSetNames = {'350-400ms-Slope', '350-400ms-MeanDiff', '650-800ms-R4', '650-800ms-R3R4', ...
+featureSetNames = {'600-700ms-MeanDiff','400-500ms-MeanDiff', '350-400ms-Slope', '350-400ms-MeanDiff', '650-800ms-R4', '650-800ms-R3R4', ...
     '350-400ms-R3R4'};
-featureSetTimeInds = {23:26, 23:26, 38:46, 38:46, 23:26};
-featureSetRInds = {1:4, 1:4, 4, 3:4, 3:4};
-trueInd = [1, 1, 1, 1, 1];
-for compWinToUse = 24%[17, 24, 26, 38]
+featureSetTimeInds = {36:41, 26:31, 23:26, 23:26, 38:46, 38:46, 23:26};
+featureSetRInds = {1:4, 1:4, 1:4, 1:4, 4, 3:4, 3:4};
+trueInd = [1, 1, 1, 1, 1, 1, 1];
+for compWinToUse = 17%[17, 24, 26, 38]
     fprintf('Comp Win %d\n', compWinToUse);
-    for featureSet = 5%:-1:2
+    for featureSet = 1
         fprintf('%s\n', featureSetNames{featureSet});
         
         for s = 1:numSub
@@ -61,8 +60,7 @@ for compWinToUse = 24%[17, 24, 26, 38]
                 krRespList{s} = responseTraj(:, featureSetRInds{featureSet});
                 
                 krTrajToAdd = squeeze(mean(krTraj(:, featureSetRInds{featureSet}, featureSetTimeInds{featureSet}), 3));
-%                 krLabels = krLabels;
-                if strcmp(featureSetNames{featureSet}, '350-400ms-MeanDiff')
+                if strcmp(featureSetNames{featureSet}, '350-400ms-MeanDiff') || strcmp(featureSetNames{featureSet}, '400-500ms-MeanDiff') || strcmp(featureSetNames{featureSet}, '600-700ms-MeanDiff')
                     krTrajToAdd = squeeze(mean(krTrajToAdd(:,1:2), 2) - mean(krTrajToAdd(:,3:4), 2));
                 elseif strcmp(featureSetNames{featureSet}, '350-400ms-Slope')
                     old_krTrajToAdd = krTrajToAdd;
@@ -110,11 +108,11 @@ for compWinToUse = 24%[17, 24, 26, 38]
             
             title(sprintf('Single Item AUC, Train on Comp Window %.0f\n%s\nPercent above chance = %.0f', winTime(compWinToUse), featureSetNames{featureSet}, (sum(AUCs_pop > 0.5)/numDraws)*100));
             if savePlots
-%                 export_fig(f, sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/singleItem_AUC_%s_cWin%d.fig', featureSetNames{featureSet}, compWinToUse));
+                export_fig(f, sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/singleItem_AUC_%s_cWin%d.fig', featureSetNames{featureSet}, compWinToUse));
                 export_fig(f, sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/singleItem_AUC_%s_cWin%d.pdf', featureSetNames{featureSet}, compWinToUse));
-%                 save(['../../compEEG-data/results/KR_analysis_output_' featureSetNames{featureSet} '_singleItem_Direct_cWin' num2str(compWinToUse) '.mat'], ...
-%                     'ROC_X_true', 'ROC_Y_true', 'ROC_T_true', 'AUCs_true', ...
-%                     'ROC_X_pop', 'ROC_Y_pop', 'ROC_T_pop', 'AUCs_pop', 'draws_pop');
+                save(['../../compEEG-data/results/KR_analysis_output_' featureSetNames{featureSet} '_singleItem_Direct_cWin' num2str(compWinToUse) '.mat'], ...
+                    'ROC_X_true', 'ROC_Y_true', 'ROC_T_true', 'AUCs_true', ...
+                    'ROC_X_pop', 'ROC_Y_pop', 'ROC_T_pop', 'AUCs_pop', 'draws_pop');
             end
         else
             [ p_true, p_pop, draws_pop, mean_diff_true, mean_diff_pop ] = runSubjBootstrap_pairedT_KR(...

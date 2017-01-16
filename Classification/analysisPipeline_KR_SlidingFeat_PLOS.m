@@ -10,7 +10,7 @@ numSub = length(subjects);
 fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2.mat';
 KRanswer = importdata('/Users/nrafidi/Documents/MATLAB/compEEG-stim/KR_answer.txt');
 
-compWinToUse = 29; %17, 24:29, 38
+compWinToUse = 16; %17, 24:29, 38
 for s = 1:numSub
     sub = subjects{s};
     disp(sub);

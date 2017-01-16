@@ -1,5 +1,5 @@
 % Plot sliding classification data
-load ../../compEEG-data/results/CompEEG_CV_Slide_Accs.mat
+load ../../compEEG-data/results/CompEEG_CV_Slide_Accs_PDTW.mat
 [numSub, numT] = size(subAccs);
 winTime = winTime(1:numT);
 
@@ -21,7 +21,7 @@ title(sprintf('Competition accuracy over time\n%s', ...
     'using 50ms window averages'));
 set(gcf, 'color', 'w');
 set(gca, 'fontsize', 16);
-export_fig(f, '../../compEEG-data/results/figures/compCV_allSub_50ms_PLOS.pdf');
+export_fig(f, '../../compEEG-data/results/figures/compCV_allSub_50ms_PDTW_PLOS.pdf');
 % 
 % freqSubAvg = squeeze(mean(collectFreq, 4));
 % freqSubStd = (squeeze(std(collectFreq, 0, 4)))./sqrt(numSub);
