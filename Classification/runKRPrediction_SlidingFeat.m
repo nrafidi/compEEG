@@ -1,18 +1,32 @@
-function [ itemTraj ] = runKRPrediction_SlidingFeat(sub, krData, krLabels, compWin)
+function [ itemTraj ] = runKRPrediction_SlidingFeat(sub, krData, krLabels, compWin, isRepExp)
 % Applies a classifier trained on a subject's competition data to their KR
 % data
 
 addpath ./logisticRegression/
 numChan = 64;
-dataRoot = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/' sub '/'];
+
+if isRepExp
+    dataRoot = ['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/preproc-final/' sub '/'];
+    fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/' sub '/'];
+else
+    dataRoot = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/' sub '/'];
+fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'];
+end
+
 
 fCPrefix = [dataRoot 'CompEEG_'];
-fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'];
+
 if ~exist(fResPrefix, 'dir')
     mkdir(fResPrefix);
 end
-fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat';
-
+fSuffixString = '%s_BP2-%d_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat';
+if strcmp(sub, 'NN')
+    fSuffix = sprintf(fSuffixString, '_Vis', 127);
+elseif strcmp(sub, 'HHH')
+    fSuffix = sprintf(fSuffixString, '', 200);
+else
+    fSuffix = sprintf(fSuffixString, '_Vis', 200);
+end
 rng('shuffle');
 
 compFname = [fCPrefix sub fSuffix];
@@ -34,6 +48,9 @@ krLabels = krLabels(krLabels(:,1) ==1, 2);
 
 numWinToTry = size(krData,2)/numChan;
 uniqueItems = unique(krLabels);
+if any(uniqueItems == 255)
+    uniqueItems = uniqueItems(uniqueItems ~= 255);
+end
 itemTraj = nan(length(uniqueItems), 4, numWinToTry);
 for i = 1:length(uniqueItems)
     

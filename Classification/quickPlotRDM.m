@@ -4,7 +4,7 @@ load ../../compEEG-data/results/CompEEG_CV_Slide_Models_PLOS.mat
 numSub = size(subModels, 1);
 avgRDM = zeros(size(subModels, 2));
 timeVec = -100:20:960;
-myTimes = [220, 360, 640];
+myTimes = [220];%, 360, 640];
 minTime = min(timeVec);
 maxTime = max(timeVec);
 
@@ -33,6 +33,7 @@ xlabel('Start Time of Window Relative to Onset (ms)');
 ylabel('Start Time of Window Relative to Onset Onset (ms)');
 colorbar
 legend(handles, {'Peak 1', 'Peak 2', 'Peak 3'});
+%%
 set(gca, 'fontsize', 16);
 set(gcf, 'color', 'w');
 export_fig(f, '../../compEEG-data/results/figures/avgRDM_50ms_PLOS.pdf');

@@ -1,12 +1,12 @@
 % Script to redo parsing/feature extraction for all subjects
 
-subjects = {'DD'};
+subjects = {'YY', 'WW', 'TT', 'GGG', 'HHH'};
 experi = 'CompEEG__KR';
 
 % eeglab;
 
 % Path to data files
-dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/';
+dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/';
 options = struct;
 % Visual Inspection
 if ~isfield(options, 'isVis')
@@ -39,7 +39,7 @@ end
 
 
 
-for s = 1:length(subjects)
+for s = 4:length(subjects)
     sub = subjects{s};
     clear EEG;
     
@@ -72,8 +72,8 @@ for s = 1:length(subjects)
         loadFname = [loadFname '_Ref'];
     end
     
-    saveFname = [saveFname '_Epochs_Base'];
-    loadFname = [loadFname '_Epochs_Base'];
+    saveFname = [saveFname '_Epochs_Epochs_Base'];
+    loadFname = [loadFname '_Epochs_Epochs_Base'];
     
     if options.runICA || options.useICA
         saveFname = [saveFname '_ICA1-2'];
@@ -86,9 +86,9 @@ for s = 1:length(subjects)
     % Create .mat file
     
     if strcmp(experi, 'CompEEG')
-        [data, labels, time] = getDataLabels_Comp(EEG);
+        [data, labels, time] = getDataLabels_Comp(sub, EEG);
     else
-        [data, labels, time] = getDataLabels_KR(EEG);
+        [data, labels, time] = getDataLabels_KR(sub, EEG);
     end
     disp(sum(labels(:,1) == 1))
     bar(labels(:,1));

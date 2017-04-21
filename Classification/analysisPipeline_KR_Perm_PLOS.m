@@ -134,7 +134,7 @@ for s = 1:numSub
     else
         if doPerm
             numItems = length(compLabelList{s});
-            B = logReg(compDataList{s}, compLabelList{s}(randPerm(numItems)), [1 2], false);
+            B = logReg(compDataList{s}, compLabelList{s}(randperm(numItems)), [1 2], false);
         else
             B = logReg(compDataList{s}, compLabelList{s}, [1 2], false);
         end

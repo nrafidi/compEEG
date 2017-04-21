@@ -5,11 +5,25 @@
 % Starts with Competition and KR EEG data and produces KR population
 % accuracy and histogram
 %
-subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
-    'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+
+isRepExp = true;
+if isRepExp
+    subjects = {'JJJ', 'III', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+        'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
+        'YY'};
+else
+    subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
+        'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+end
 numSub = length(subjects);
 
-behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
+if isRepExp
+    behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/behavioral/';
+    resDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/';
+else
+    behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
+    resDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/';
+end
 
 responseTrajList = [];
 responseTrajList_C = [];
@@ -19,7 +33,7 @@ for s = 1:numSub
     load([behaveDataRoot '/' sub '/' sub '_answerTraj.mat']);
     responseTrajList = cat(1, responseTrajList, responseTraj);
     
-    load(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' ...
+    load([resDir ...
         sub '/KRanalysis.mat']);
     krLabels = logical(krLabels);
     

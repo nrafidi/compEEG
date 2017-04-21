@@ -2,10 +2,16 @@
 
 % Starts with Competition and KR EEG data and produces KR population
 % accuracy and histogram
-subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
-    'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+subjects = {'III', 'JJJ', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+    'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
+    'YY'};
+
+%VV and UU have files missing
+
+% {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
+%     'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 numSub = length(subjects);
-behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
+behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/behavioral/';
 
 krTrajList = cell(numSub, 1);
 krRespList = cell(numSub, 1);
@@ -17,12 +23,12 @@ doAUC = true;
 doSubMeans = false;
 savePlots = true;
 
-featureSetNames = {'600-700ms-MeanDiff','400-500ms-MeanDiff', '350-400ms-Slope', '350-400ms-MeanDiff', '650-800ms-R4', '650-800ms-R3R4', ...
+featureSetNames = {'660ms-MeanDiff', '640ms-MeanDiff', '680ms-MeanDiff', '600-700ms-MeanDiff','400-500ms-MeanDiff', '350-400ms-Slope', '350-400ms-MeanDiff', '650-800ms-R4', '650-800ms-R3R4', ...
     '350-400ms-R3R4'};
-featureSetTimeInds = {36:41, 26:31, 23:26, 23:26, 38:46, 38:46, 23:26};
-featureSetRInds = {1:4, 1:4, 1:4, 1:4, 4, 3:4, 3:4};
-trueInd = [1, 1, 1, 1, 1, 1, 1];
-for compWinToUse = 17%[17, 24, 26, 38]
+featureSetTimeInds = {39, 38, 40, 36:41, 26:31, 23:26, 23:26, 38:46, 38:46, 23:26};
+featureSetRInds = {1:4, 1:4, 1:4, 1:4, 1:4, 1:4, 1:4, 4, 3:4, 3:4};
+trueInd = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+for compWinToUse = 18%[17, 24, 26, 38]
     fprintf('Comp Win %d\n', compWinToUse);
     for featureSet = 1
         fprintf('%s\n', featureSetNames{featureSet});
@@ -30,8 +36,8 @@ for compWinToUse = 17%[17, 24, 26, 38]
         for s = 1:numSub
             sub = subjects{s};
             
-            fname = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' ...
-                sub '/KRanalysis_SlidingFeat_CWin' num2str(compWinToUse) '.mat'];
+            fname = ['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/' ...
+                sub '/KRanalysis_SlidingFeat_CWin' num2str(compWinToUse) '_Vis.mat'];
             
             load(fname);
             
@@ -60,7 +66,12 @@ for compWinToUse = 17%[17, 24, 26, 38]
                 krRespList{s} = responseTraj(:, featureSetRInds{featureSet});
                 
                 krTrajToAdd = squeeze(mean(krTraj(:, featureSetRInds{featureSet}, featureSetTimeInds{featureSet}), 3));
-                if strcmp(featureSetNames{featureSet}, '350-400ms-MeanDiff') || strcmp(featureSetNames{featureSet}, '400-500ms-MeanDiff') || strcmp(featureSetNames{featureSet}, '600-700ms-MeanDiff')
+                if strcmp(featureSetNames{featureSet}, '350-400ms-MeanDiff') || ...
+                        strcmp(featureSetNames{featureSet}, '400-500ms-MeanDiff') || ...
+                        strcmp(featureSetNames{featureSet}, '600-700ms-MeanDiff') || ...
+                        strcmp(featureSetNames{featureSet}, '660ms-MeanDiff') || ...
+                        strcmp(featureSetNames{featureSet}, '640ms-MeanDiff') || ...
+                        strcmp(featureSetNames{featureSet}, '680ms-MeanDiff')
                     krTrajToAdd = squeeze(mean(krTrajToAdd(:,1:2), 2) - mean(krTrajToAdd(:,3:4), 2));
                 elseif strcmp(featureSetNames{featureSet}, '350-400ms-Slope')
                     old_krTrajToAdd = krTrajToAdd;
@@ -105,12 +116,13 @@ for compWinToUse = 17%[17, 24, 26, 38]
             ylabel('Number of draws');
             legend({'Population', 'True'});
             set(gcf, 'Color', 'w');
-            
-            title(sprintf('Single Item AUC, Train on Comp Window %.0f\n%s\nPercent above chance = %.0f', winTime(compWinToUse), featureSetNames{featureSet}, (sum(AUCs_pop > 0.5)/numDraws)*100));
+            set(gca, 'FontSize', 16);
+%             title(sprintf('Single Item AUC, Train on Comp Window %.0f\n%s\nPercent above chance = %.2f', winTime(compWinToUse), featureSetNames{featureSet}, (sum(AUCs_pop > 0.5)/numDraws)*100));
+            title(sprintf('AUC Histogram of Subject-level Bootstrap\n660ms Post Stimulus Onset\nPercent above chance = %.1f',  (sum(AUCs_pop > 0.5)/numDraws)*100));
             if savePlots
-                export_fig(f, sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/singleItem_AUC_%s_cWin%d.fig', featureSetNames{featureSet}, compWinToUse));
-                export_fig(f, sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/singleItem_AUC_%s_cWin%d.pdf', featureSetNames{featureSet}, compWinToUse));
-                save(['../../compEEG-data/results/KR_analysis_output_' featureSetNames{featureSet} '_singleItem_Direct_cWin' num2str(compWinToUse) '.mat'], ...
+                export_fig(f, sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/figures/singleItem_AUC_%s_cWin%d_Vis.fig', featureSetNames{featureSet}, compWinToUse));
+                export_fig(f, sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/figures/singleItem_AUC_%s_cWin%d_Vis.pdf', featureSetNames{featureSet}, compWinToUse));
+                save(['../../compEEG-data-rep/results/KR_analysis_output_' featureSetNames{featureSet} '_singleItem_Direct_cWin' num2str(compWinToUse) '_Vis.mat'], ...
                     'ROC_X_true', 'ROC_Y_true', 'ROC_T_true', 'AUCs_true', ...
                     'ROC_X_pop', 'ROC_Y_pop', 'ROC_T_pop', 'AUCs_pop', 'draws_pop');
             end
@@ -118,7 +130,7 @@ for compWinToUse = 17%[17, 24, 26, 38]
             [ p_true, p_pop, draws_pop, mean_diff_true, mean_diff_pop ] = runSubjBootstrap_pairedT_KR(...
                 krTrajList, krLabelList, numDraws);
             
-            %         save(['../../compEEG-data/results/KR_analysis_output_pairedT_' featureSetNames{featureSet} '_meanTime.mat'], ...
+            %         save(['../../compEEG-data-rep/results/KR_analysis_output_pairedT_' featureSetNames{featureSet} '_meanTime.mat'], ...
             %             'p_true', 'p_pop', 'draws_pop', 'mean_diff_true', 'mean_diff_pop');
         end
     end

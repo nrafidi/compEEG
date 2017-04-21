@@ -29,7 +29,8 @@ end
 %AA = false, BB = false, DD = true, EE = true, F = true, GG = false,
 %HH = true, JJ = true, K = true, M = true, N = true, O = true, R = true,
 %S = true, T = true, U = true, V = true, X = true, Y = true, Z = true
-if strcmp(sub, 'AA') || strcmp(sub, 'BB') || strcmp(sub, 'GG')
+switchedSubs = {'AA', 'BB', 'GG',  'TT', 'GGG', 'YY', 'WW'};
+if ismember(sub, switchedSubs)
     oddblock = false;
 else
     oddblock = true;
@@ -41,6 +42,8 @@ prevEvent = firstEvent;
 for i = 2:numEpochs
     if ischar(epochInfo(i).eventtype);
         currEvent = str2num(epochInfo(i).eventtype);
+    elseif iscell(epochInfo(i).eventtype)
+        currEvent = str2num(epochInfo(i).eventtype{1});
     else
         currEvent = epochInfo(i).eventtype;
     end

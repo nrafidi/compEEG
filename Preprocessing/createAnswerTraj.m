@@ -1,12 +1,18 @@
-subjects = {'HH', 'JJ', ...
-    'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+subjects = {'III', 'JJJ', 'KKK'};
+% {'NN', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+%     'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'VV', 'WW',...
+%     'YY'};
+%UU is missing a file :/
+
+% {'HH', 'JJ', ...
+%     'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 
 numBlocks = 4;
 numStimuli = 60;
 
 addpath ../Experiment/
 
-behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
+behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/behavioral/';
 stimRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-stim/';
 eventFile = '%s/%s_KR_%d_2_events.txt';
 

@@ -1,6 +1,22 @@
-subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
-    'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+isRepExp = false;
+if isRepExp
+    subjects = {'JJJ', 'III', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+        'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
+        'YY'};
+else
+    subjects = {'AA', 'BB', 'DD', 'EE', 'F', 'GG', 'HH', 'JJ', ...
+        'K', 'M', 'N', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+end
 numSub = length(subjects);
+
+if isRepExp
+    behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/behavioral/';
+    resDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/';
+else
+    behaveDataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
+    resDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/';
+end
+
 
 meanRespTraj = nan(numSub, 4);
 meanRespTrajCorr = nan(numSub, 4);
@@ -9,8 +25,8 @@ meanCorr = nan(numSub, 1);
 krTrajList = cell(numSub, 1);
 krLabelList = cell(numSub, 1);
 for s = 1:numSub
-    load(sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/%s/%s_answerTraj.mat', subjects{s}, subjects{s}));
-    [~, ~, corrAnswers] = sortKRTraj(subjects{s});
+    load(sprintf('%s%s/%s_answerTraj.mat', behaveDataRoot, subjects{s}, subjects{s}));
+    corrAnswers = sortKRTrajBehave(subjects{s}, resDir);
     
     numTraj = size(responseTraj, 1);
     noNaN = false(numTraj, 1);
@@ -44,7 +60,7 @@ ylabel('Fraction Correct');
 title(sprintf('Average Performance Across Subjects\nin Each Session 2 Round and in Session 3'));
 set(gca, 'fontsize', 16);
 set(gcf, 'color', 'w');
-export_fig(f1, '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/Behavioral/avgPerf.pdf');
+export_fig(f1, [resDir 'figures/Behavioral/avgPerf.pdf']);
 
 f2 = figure;
 corrIncMean = [mean(meanRespTrajCorr, 1);mean(meanRespTrajInc, 1)];
@@ -56,10 +72,10 @@ errorbar(1.145:4.145, corrIncMean(2,:), std(meanRespTrajInc), 'k.');
 legend('Subsequently Remembered', 'Subsequently Forgotten');
 xlabel('Round of Testing');
 ylabel('Fraction Correct');
-title(sprintf('Average Performance Across Subjects\nDivided by Session 3 Performance'));
+title(sprintf('Average Performance Across Subjects\nGrouped by Session 3 Performance'));
 set(gca, 'fontsize', 16);
 set(gcf, 'color', 'w');
-export_fig(f2, '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/Behavioral/avgPerf_div.pdf');
+export_fig(f2, [resDir 'figures/Behavioral/avgPerf_div.pdf']);
 %%
 doDirect = false;
 doTuple = true;
@@ -95,4 +111,4 @@ suptitle('AUC for Subsets of Session 2 Data Predicting Session 3 Results');
 set(gcf, 'color', 'w');
 screenSize = get(0,'Screensize');
 set(gcf, 'Position', screenSize); % Maximize figure
-export_fig(f3, '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/figures/Behavioral/predPerf_tuple_bootstrap.pdf');
+export_fig(f3, [resDir 'figures/Behavioral/predPerf_tuple_bootstrap.pdf']);

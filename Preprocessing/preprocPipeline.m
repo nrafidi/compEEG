@@ -30,11 +30,15 @@ clear EEG;
 eeglab;
 
 % Path to data files
-dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/';
+dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/';
 % Intermediate files
 saveInterDir = [dataRoot '/preproc-partial/' sub '/'];
 % Final files
-saveFname = [dataRoot '/preproc-final/' sub '/' experi '_' sub];
+preProcFinalRoot = [dataRoot '/preproc-final/' sub '/'];
+if ~exist(preProcFinalRoot, 'dir');
+    mkdir(preProcFinalRoot);
+end
+saveFname = [preProcFinalRoot experi '_' sub];
 % Epochs
 epochWin = [-0.3, 2];
 
@@ -115,7 +119,7 @@ if ~isnan(options.HP) && ~isnan(options.LP) && ...
     EEG.setname=[EEG.setname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     saveFname = [saveFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif ~isnan(options.HP) && ~isnan(options.LP)
     saveFname = [saveFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     runningFname = [runningFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
@@ -132,7 +136,7 @@ if ~isnan(options.N) && ...
     EEG.setname=[EEG.setname '_N' num2str(options.N)];
     saveFname = [saveFname '_N' num2str(options.N)];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif ~isnan(options.N)
     saveFname = [saveFname '_N' num2str(options.N)];
     runningFname = [runningFname '_N' num2str(options.N)];
@@ -148,7 +152,7 @@ if options.doRef && ~exist([saveInterDir runningFname '_Ref.set'], 'file')
     EEG.setname=[EEG.setname '_Ref'];
     saveFname = [saveFname '_Ref'];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif options.doRef
     saveFname = [saveFname '_Ref'];
     runningFname = [runningFname '_Ref'];
@@ -165,7 +169,7 @@ if options.doBase
         saveFname = [saveFname '_Epochs_Base'];
         
         oldSetName = EEG.setname;
-        EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%         EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
     else
         saveFname = [saveFname '_Epochs_Base'];
         runningFname = [runningFname '_Epochs_Base'];
@@ -177,7 +181,7 @@ else
         EEG = eeg_checkset( EEG );
         saveFname = [saveFname '_Epochs'];
         oldSetName = EEG.setname;
-        EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%         EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
     else
         runningFname = [runningFname '_Epochs'];
         saveFname = [saveFname '_Epochs'];
@@ -194,7 +198,7 @@ if options.runICA && ~exist([saveInterDir runningFname '_ICA1-2.set'], 'file')
     EEG = pop_runica(EEG, 64, 'icatype', 'sobi');
     toc
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'savemode','resave');
+%     EEG = pop_saveset( EEG, 'savemode','resave');
     EEG = eeg_checkset( EEG );
 elseif options.useICA
     %***Need to figure out how to apply pre-computed weights

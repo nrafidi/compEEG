@@ -51,7 +51,7 @@ else
 end
 
 if options.overLap
-    erpWin = minTime:20:options.maxTime;
+    erpWin = minTime:floor(0.4*options.erpWinSize):options.maxTime;
 else
     erpWin = minTime:options.erpWinSize:options.maxTime;
 end

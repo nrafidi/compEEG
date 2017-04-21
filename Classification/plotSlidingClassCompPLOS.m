@@ -1,27 +1,38 @@
 % Plot sliding classification data
-load ../../compEEG-data/results/CompEEG_CV_Slide_Accs_PDTW.mat
+load ../../compEEG-data/results/CompEEG_5FCV_Slide_Accs.mat
+subAccs = squeeze(mean(subAccs, 3));
 [numSub, numT] = size(subAccs);
+numT = numT-1;
 winTime = winTime(1:numT);
+subAccs = subAccs(:,1:numT);
 
-erpSubAvg = mean(subAccs);
-erpSubStd = std(subAccs)./sqrt(numSub);
+erpSubAvg = nanmean(subAccs);
+erpSubStd = nanstd(subAccs)./sqrt(numSub);
+subUpp = erpSubAvg + erpSubStd;
+subLow = erpSubAvg - erpSubStd;
+X = [winTime, fliplr(winTime)];
+Y = [subLow, fliplr(subUpp)];
 f = figure;
 hold on;
+fh = fill(X, Y, 'c');
+set(fh, 'EdgeAlpha', 0);
 plot(winTime, erpSubAvg, 'b');
 line([min(winTime) - 20, max(winTime)+20], [0.5, 0.5], 'Color', 'k');
 line([min(winTime) - 20, max(winTime)+20], [0.55, 0.55], 'Color', 'k', 'LineStyle', '--');
-errorbar(winTime, erpSubAvg, erpSubStd, 'b');
+line([0, 0], [0.46, 0.66], 'Color', 'k');
+% scatter(220, erpSubAvg(17), 500, 'ro', 'LineWidth', 5);
+% errorbar(winTime, erpSubAvg, erpSubStd, 'b');
 
 xlabel('Start Time of Window Relative to Onset (ms)');
 xlim([min(winTime) - 20, max(winTime)+20]);
-ylim([0.48, 0.68]);
+ylim([0.46, 0.66]);
 
 ylabel('Classification Accuracy');
 title(sprintf('Competition accuracy over time\n%s', ...
     'using 50ms window averages'));
 set(gcf, 'color', 'w');
 set(gca, 'fontsize', 16);
-export_fig(f, '../../compEEG-data/results/figures/compCV_allSub_50ms_PDTW_PLOS.pdf');
+export_fig(f, '../../compEEG-data/results/figures/compCV_allSub_50ms_PLOS.pdf');
 % 
 % freqSubAvg = squeeze(mean(collectFreq, 4));
 % freqSubStd = (squeeze(std(collectFreq, 0, 4)))./sqrt(numSub);

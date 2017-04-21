@@ -4,15 +4,23 @@
 addpath ./logisticRegression/
 addpath ../Preprocessing/
 
-subjects = {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
-    'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
-    'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+subjects = {'III', 'JJJ', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+    'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
+    'YY'};
+
+% {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
+% 'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', ...
+%         'X', 'Z', 'N'};
+% 
+% {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
+%     'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
+%     'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 numSub = length(subjects);
 numFeatWins = 55;
 numFolds = 5;
 doZ = 1;
-fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
-fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_ItemAvg_Features_Overlap_Time.mat';
+fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/preproc-final/';
+fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat';
 subAccs = nan(numSub, numFeatWins, numFolds);
 
 load comp5Fseed.mat
@@ -22,7 +30,7 @@ for s = 1:length(subjects)
     tic
     sub = subjects{s};
     loadFname = [fPrefix sub '/CompEEG_' sub fSuffix];
-    saveFname = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/CompEEG_5FCV-rsh_Slide_Accs.mat'];
+    saveFname = ['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/' sub '/CompEEG_5FCV_Slide_Accs.mat'];
     
     if exist(saveFname, 'file')
         load(saveFname);
@@ -30,6 +38,7 @@ for s = 1:length(subjects)
         fprintf('Subject %s Loaded.\n', sub);
     else
         if ~exist(loadFname, 'file')
+            keyboard
             fprintf('Subject %s failed.\n', sub);
             continue
         else
@@ -72,5 +81,5 @@ for s = 1:length(subjects)
         toc
     end
 end
-save('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_5FCV-rsh_Slide_Accs.mat',...
+save('/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/CompEEG_5FCV_Slide_Accs.mat',...
     'subAccs', 'winTime');

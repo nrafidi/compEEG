@@ -4,17 +4,21 @@
 addpath ./logisticRegression/
 addpath ../Preprocessing/
 
-subjects = {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
-    'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
-    'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+subjects = {'III', 'JJJ', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+    'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
+    'YY'};
+%
+% {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
+%     'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
+%     'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
 numSub = length(subjects);
 
 numPerm = 100;
 winToUse = 17;
 
 doZ = 1;
-fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
-fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat';
+fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/preproc-final/';
+fSuffix = '_BP2-%d_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat';
 numFolds = 5;
 trueSubAccs = nan(numSub, numFolds);
 permSubAccs = nan(numSub, numPerm, numFolds);
@@ -24,16 +28,38 @@ load comp5Fseed.mat
 
 for s = 1:length(subjects)
     sub = subjects{s};
-    resultFname = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' ...
+    
+    resultDir = ['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/' sub '/'];
+    if ~exist(resultDir, 'dir')
+        mkdir(resultDir);
+    end
+    
+    resultFname = ['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/' ...
         sub '/CompEEG_5FCV_win' num2str(winToUse) '_permAccs.mat'];
     if exist(resultFname, 'file');
+        load(resultFname);
         trueSubAccs(s,:) = trueAcc;
         permSubAccs(s,:,:) = permAccs;
+        
+        if s == length(subjects)
+            if strcmp(sub, 'NN')
+                fSuffix = sprintf(fSuffix, 127);
+            else
+                fSuffix = sprintf(fSuffix, 200);
+            end
+            loadFname = [fPrefix sub '/CompEEG_' sub fSuffix];
+            load(loadFname);
+        end
         fprintf('Subject %s Loaded\n', sub);
     else
-        
+        if strcmp(sub, 'NN')
+            fSuffix = sprintf(fSuffix, 127);
+        else
+            fSuffix = sprintf(fSuffix, 200);
+        end
         loadFname = [fPrefix sub '/CompEEG_' sub fSuffix];
         if ~exist(loadFname, 'file')
+            keyboard;
             fprintf('Subject %s failed.\n', sub);
             continue
         else
@@ -109,6 +135,6 @@ for s = 1:length(subjects)
     end
     %     close(h)
 end
-save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_5FCV_win' ...
+save(['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/CompEEG_5FCV_win' ...
     num2str(winToUse) '_permAccs.mat'],...
     'trueSubAccs', 'permSubAccs', 'winTime');
