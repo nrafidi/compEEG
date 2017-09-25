@@ -41,5 +41,5 @@ function logp = loggaussian(x,mu,sigma, varargin)
 %         keyboard;
         sigma = sigma + eps;
     end
-    logp = logp - sum(log(sigma(selectedFeats)) + 0.5*((x(selectedFeats) - mu(selectedFeats))./sigma(selectedFeats)).^2);
+    logp = logp - sum(log10(sigma(selectedFeats)) + (0.5*((x(selectedFeats) - mu(selectedFeats))./sigma(selectedFeats)).^2)/(log(10)));
     

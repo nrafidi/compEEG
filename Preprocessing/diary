@@ -1,0 +1,325 @@
+splitData
+eeglab: options file is ~/eeg_options.m
+EEGLAB warning: there can be only one EEGLAB window, closing old one
+EEGLAB: adding "Biosig" to the path; subfolders (if any) might be missing from the path
+EEGLAB: adding "dipfit" v2.3 (see >> help eegplugin_dipfit)
+EEGLAB: adding "firfilt" v1.6.1 (see >> help eegplugin_firfilt)
+Subject: BBB
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 466 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: GGG
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject GGG is funky.
+False Start
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 2 events removed.
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 490 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 467 events removed.
+Saving dataset...
+Saving dataset...
+Subject: HHH
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject HHH is funky.
+False Start
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 3 events removed.
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 495 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 468 events removed.
+Saving dataset...
+Saving dataset...
+Subject: AAA
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject AAA is funky.
+False Start
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 7 events removed.
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 467 events removed.
+Saving dataset...
+Saving dataset...
+Subject: CCC
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 502 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 460 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: DDD
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 501 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 461 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: EEE
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 501 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 461 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: FFF
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 502 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 460 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: MM
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject MM is funky.
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 500 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 456 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: NN
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject NN is funky.
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 508 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 452 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: OO
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 502 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 460 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: PP
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 501 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 461 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: QQ
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 501 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 461 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: RR
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 502 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 460 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: SS
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject SS is funky.
+False Start
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 3 events removed.
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 467 events removed.
+Saving dataset...
+Saving dataset...
+Subject: TT
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject TT is funky.
+False Start
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 2 events removed.
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 467 events removed.
+Saving dataset...
+Saving dataset...
+Subject: UU
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 466 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: VV
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 466 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: WW
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 466 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+Subject: YY
+Reading data in BDF format...
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Importing data events...
+eeg_checkset note: creating the original event table (EEG.urevent)
+eeg_checkset note: re-creating the original event table (EEG.urevent)
+Subject YY is funky.
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 496 events removed.
+eeg_checkset note: upper time limit (xmax) adjusted so (xmax-xmin)*srate+1 = number of frames
+Warning: converting all event types to strings
+eeg_insertbound(): 1 boundary (break) events added.
+eeg_insertbound(): event latencies recomputed and 440 events removed.
+Warning: converting all event types to strings
+Saving dataset...
+Saving dataset...
+diary off

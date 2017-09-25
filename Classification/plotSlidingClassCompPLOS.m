@@ -25,14 +25,14 @@ line([0, 0], [0.46, 0.66], 'Color', 'k');
 
 xlabel('Start Time of Window Relative to Onset (ms)');
 xlim([min(winTime) - 20, max(winTime)+20]);
-ylim([0.46, 0.66]);
+ylim([0.46, 0.76]);
 
 ylabel('Classification Accuracy');
 title(sprintf('Competition accuracy over time\n%s', ...
     'using 50ms window averages'));
 set(gcf, 'color', 'w');
 set(gca, 'fontsize', 16);
-export_fig(f, '../../compEEG-data/results/figures/compCV_allSub_50ms_PLOS.pdf');
+export_fig(f, '../../compEEG-data/results/figures/compCV_allSub_50ms_PLOS_new.pdf');
 % 
 % freqSubAvg = squeeze(mean(collectFreq, 4));
 % freqSubStd = (squeeze(std(collectFreq, 0, 4)))./sqrt(numSub);

@@ -1,14 +1,25 @@
 addpath ./logisticRegression/
 addpath ../Preprocessing/
 
-subjects = {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
-    'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
-    'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+isRepExp = true;
+if isRepExp
+    subjects = {'III', 'JJJ', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+        'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
+        'YY'};
+    fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/preproc-final/';
+    resDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/';
+else
+    subjects =  {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
+        'AA', 'BB', 'DD', 'EE', 'GG', 'HH', 'JJ', 'M', 'N',...
+        'F', 'K', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'};
+    fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
+    resDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/';
+end
 numSub = length(subjects);
 numFeatWins = 54;
 winSizeOptions = 50;%:50:200;
 doZ = 1;
-fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
+
 fSuffix = '_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat';
 
 subModels = cell(numSub, numFeatWins);
@@ -46,14 +57,14 @@ for s = 1:length(subjects)
             
         end
         subModel = subModels(s,:);
-        if ~exist(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'], 'dir')
-            mkdir(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/']);
+        if ~exist([resDir sub '/'], 'dir')
+            mkdir([resDir sub '/']);
         end
-        save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/CompEEG_CV_Slide_Models_PLOS.mat'],...
+        save([resDir sub '/CompEEG_CV_Slide_Models_PLOS.mat'],...
             'subModel');
         fprintf('Subject %s succeeded.\n', sub);
     end
 end
 
-save('/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_CV_Slide_Models_PLOS.mat',...
+save([resDir 'CompEEG_CV_Slide_Models_PLOS.mat'],...
     'subModels');

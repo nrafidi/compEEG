@@ -34,7 +34,7 @@ function rslt =  nbayes_apply(examples, model, varargin)
         sigma= model.perLabelModels(k).sigma;
         labelPrior= model.perLabelModels(k).labelPrior;
         for i=1:size(examples,1)
-            rslt(i,k)=log(labelPrior)+loggaussian(examples(i,:),mu,sigma,selectedFeats,1);
+            rslt(i,k)=loggaussian(examples(i,:),mu,sigma,selectedFeats,1);
         end
     end
-    
+% % %     log(labelPrior)+

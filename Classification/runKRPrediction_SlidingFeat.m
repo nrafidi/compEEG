@@ -10,10 +10,10 @@ if isRepExp
     fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/' sub '/'];
 else
     dataRoot = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/' sub '/'];
-fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'];
+    fResPrefix = ['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/' sub '/'];
 end
 
-
+fBname = [fResPrefix 'CompEEG_B_cWin' num2str(compWin) '.mat'];
 fCPrefix = [dataRoot 'CompEEG_'];
 
 if ~exist(fResPrefix, 'dir')
@@ -30,19 +30,25 @@ end
 rng('shuffle');
 
 compFname = [fCPrefix sub fSuffix];
-load(compFname);
 
-featData = double(featData);
-[compData, mu, sigma] = zscore(featData);
-compLabels = labels(:,1); %#ok<*NODEF>
-
-compWinToUse = (compWin*numChan + 1):((compWin+1)*numChan);
-
-B = logReg(compData(:,compWinToUse), compLabels, [1 10], false);
-
+if exist(fBname, 'file')
+    load(fBname);
+else
+    
+    load(compFname);
+    
+    featData = double(featData);
+    [compData, mu, sigma] = zscore(featData);
+    compLabels = labels(:,1); %#ok<*NODEF>
+    
+    compWinToUse = (compWin*numChan + 1):((compWin+1)*numChan);
+    
+    B = logReg(compData(:,compWinToUse), compLabels, [1 10], false);
+    
+    save(fBname, 'B', 'mu', 'sigma');
+end
 % old_krLabels = krLabels;
 krData = krData(krLabels(:,1) == 1, :);
-krData = (krData - repmat(mu, size(krData, 1), 1))./repmat(sigma, size(krData, 1), 1);
 krLabels = krLabels(krLabels(:,1) ==1, 2);
 
 
@@ -57,6 +63,7 @@ for i = 1:length(uniqueItems)
     items = krLabels == (i+1);
     for w = 1:numWinToTry
         timeWindow = ((w-1)*numChan + 1):(w*numChan);
+        krData(items, timeWindow) = (krData(items,timeWindow) - repmat(mu(timeWindow), sum(items), 1))./repmat(sigma(timeWindow), sum(items), 1);
         P = [krData(items,timeWindow) ones(sum(items), 1)]*B;
         probs = exp(P)./(1+exp(P));
         if length(probs) == 4
