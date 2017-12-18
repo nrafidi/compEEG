@@ -30,14 +30,15 @@ for mT = 1:length(myTimes)
     handles(mT) = line([minTime maxTime], [myTime myTime], 'Color', 'k', 'LineStyle', styles{mT});
     line([myTime myTime], [minTime maxTime], 'Color', 'k', 'LineStyle', styles{mT});
 end
-title(sprintf('Average RDM of Weight Vectors over time\n Using 50ms window averages'));
-xlabel('Start Time of Window Relative to Onset (ms)');
-ylabel('Start Time of Window Relative to Onset Onset (ms)');
+title(sprintf('Average RDM of Weight Vectors over time'));
+xlabel('Time Relative to Onset (ms)');
+ylabel('Time Relative to Onset (ms)');
 colorbar
 % legend(handles, {'Peak 1', 'Peak 2', 'Peak 3'});
 
-set(gca, 'fontsize', 16);
+set(gca, 'fontsize', 18);
 set(gcf, 'color', 'w');
+% set (f, 'Units', 'normalized', 'Position', [0,0,1,1]);
 export_fig(f, '../../compEEG-data-rep/results/figures/avgRDM_50ms_PLOS.pdf');
 
 %%

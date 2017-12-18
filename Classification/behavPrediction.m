@@ -103,7 +103,7 @@ rng(12191989)
 
 numSub = numOS + numRS;
 numFolds = 5;
-numPerms = 100;
+numPerms = 1000;
 
 cvInd = crossvalind('Kfold', numSub, numFolds);
 

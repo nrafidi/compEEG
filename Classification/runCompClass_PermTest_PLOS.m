@@ -84,6 +84,7 @@ for winToUse = [1:6, 41:54]
                 startInd = (winToUse-1)*64 + 1;
                 endInd = winToUse*64;
                 X = featData(:,startInd:endInd);
+                disp(size(X, 1))
                 rng(comp5Fseed);
                 folds = crossvalind('Kfold', N, numFolds);
                 for f = 1:numFolds

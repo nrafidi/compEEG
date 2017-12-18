@@ -32,7 +32,11 @@ IndividualSubjectFirstCorrF = cell(numOS + numRS, 1);
 for i = 1:numRS
     load(sprintf(fnameString, dataRootR, repSubjects{i}, krWinString));
     
-    goodItems = sum(responseTraj, 2) > 1 | sum(responseTraj(:,1:3),2) > 0;
+    ind_response_1 = ismember(responseTraj, [0, 0, 1, 1], 'rows');
+    ind_response_2 = ismember(responseTraj, [0, 1, 1, 1], 'rows');
+    ind_response_3 = ismember(responseTraj, [1, 1, 1, 1], 'rows');
+    
+    goodItems = ind_response_1 | ind_response_2 | ind_response_3;
     
     for j = 1:size(responseTraj, 1)
         if goodItems(j)
@@ -67,7 +71,11 @@ end
 for i = 1:numOS
     load(sprintf(fnameString, dataRootO, origSubjects{i}, krWinString));
     
-    goodItems = sum(responseTraj, 2) > 1 | sum(responseTraj(:,1:3),2) > 0;
+    ind_response_1 = ismember(responseTraj, [0, 0, 1, 1], 'rows');
+    ind_response_2 = ismember(responseTraj, [0, 1, 1, 1], 'rows');
+    ind_response_3 = ismember(responseTraj, [1, 1, 1, 1], 'rows');
+    
+    goodItems = ind_response_1 | ind_response_2 | ind_response_3;
     
     for j = 1:size(responseTraj, 1)
         if goodItems(j)
@@ -174,7 +182,7 @@ for sub = 1:numFolds
     fprintf('Both accuracy = %0.2f\n', mean(foldAccs{sub, 2}));
 end
 
-save(sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/BayesFactor_subsamp_%dfold.mat', numFolds), ...
+save(sprintf('/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/BayesFactor_subsamp_%dfold_behav.mat', numFolds), ...
             'foldAccs', 'foldBayes');
   
 totAccs = cell2mat(foldAccs);
@@ -191,7 +199,7 @@ ylabel('Classification Accuracy')
 title(sprintf('Bayes Factor: %0.2f\n%d folds', mean(foldBayes), numFolds))
 set(gcf, 'Color', 'w');
 set(gca, 'fontsize', 16);
-export_fig(f, sprintf('../../compEEG-data-rep/results/figures/BayesFactor_subsamp_%dfold.pdf', numFolds));
+export_fig(f, sprintf('../../compEEG-data-rep/results/figures/BayesFactor_subsamp_%dfold_behav.pdf', numFolds));
 
 %%
 subMeanAccs = cellfun(@mean, foldAccs);

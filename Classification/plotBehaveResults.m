@@ -43,13 +43,13 @@ for s = 1:numSub
 end
 
 meanTraj = nanmean(responseTrajList, 1);
-stdTraj = nanstd(responseTrajList, 1);
+stdTraj = nanstd(responseTrajList, 1)./size(responseTrajList, 1);
 
 meanTraj_C = nanmean(responseTrajList_C, 1);
-stdTraj_C = nanstd(responseTrajList_C, 1);
+stdTraj_C = nanstd(responseTrajList_C, 1)./size(responseTrajList_C, 1);
 
 meanTraj_I = nanmean(responseTrajList_I, 1);
-stdTraj_I = nanstd(responseTrajList_I, 1);
+stdTraj_I = nanstd(responseTrajList_I, 1)./size(responseTrajList_I, 1);
 
 figure;
 plot(1:4, meanTraj);

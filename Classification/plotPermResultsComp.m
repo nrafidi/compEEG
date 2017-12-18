@@ -1,5 +1,5 @@
 %%
-threshold = 0.001/55;
+threshold = 0.05/55;
 resultDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data%s/results/';
 addpath /Users/nrafidi/Documents/MATLAB/Toolboxes/export_fig/
 
@@ -17,29 +17,40 @@ files = dir([resultDir fileString]);
 
 
 %%
-numFiles = length(files);
+numFilesOrig = length(files);
 numFilesRep = length(filesRep);
 
-assert(numFiles == numFilesRep);
+[numFiles, indMin] = min([numFilesOrig, numFilesRep]);
+if indMin == 1
+    filesToUse = files;
+else
+    filesToUse = filesRep;
+end
+% assert(numFiles == numFilesRep);
 
 trueAccs = nan(numFiles, 1);
 trueSubAccsPooled = [];
 pVals = nan(numFiles, 1);
 timeToPlot = nan(numFiles, 1);
 for f = 1:numFiles
-    load([resultDir files(f).name]);
+    load([resultDir filesToUse(f).name]);
     permSubAccsOrig = permSubAccs;
     trueSubAccsOrig = trueSubAccs;
-    load([resultDirRep filesRep(f).name]);
+    load([resultDirRep filesToUse(f).name]);
     permSubAccs = cat(1, permSubAccs, permSubAccsOrig);
     trueSubAccs = cat(1, trueSubAccs, trueSubAccsOrig);
-    timeToPlot(f) = winTime(str2double(files(f).name(17:18)));
+    try
+        timeToPlot(f) = winTime(str2double(filesToUse(f).name(17:18)));
+    catch
+        timeToPlot(f) = winTime(str2double(filesToUse(f).name(17)));
+    end
     trueAccs(f) = mean(mean(trueSubAccs));
     trueSubAccs = mean(trueSubAccs, 2);
     trueSubAccsPooled = cat(2, trueSubAccsPooled, trueSubAccs);
     permAccs = squeeze(mean(permSubAccs, 3));
-    subPvals = sum(permAccs > repmat(trueSubAccs, 1, 100), 2)/100;
-    subProbs = norminv(subPvals+eps, 0, 1);
+    sum_perms_greater = sum(permAccs > repmat(trueSubAccs, 1, 100), 2);
+    subPvals = (sum_perms_greater + 1)/100;
+    subProbs = norminv(subPvals-eps, 0, 1);
     [~, pVals(f)] = ttest(subProbs); 
 end
 
@@ -63,13 +74,13 @@ for f = 1:(numFiles-1)
     end
 end
 legend({'Standard Deviation', 'Accuracy', 'Bonferroni Significant'});
-line([min(timeToPlot), max(timeToPlot)], [0.55, 0.55], 'LineStyle', '--', 'Color', 'k');
+% line([min(timeToPlot), max(timeToPlot)], [0.55, 0.55], 'LineStyle', '--', 'Color', 'k');
 xlim([min(timeToPlot), max(timeToPlot)]);
-ylim([min(trueAccs)-0.005, max(trueAccs)+0.01]);
+ylim([0.5, max(trueAccs)+0.01]);
 xlabel('Time relative to stimulus onset (ms)');
 ylabel('Accuracy');
 
 title(sprintf('Competition Accuracy Over Time'));
-
+set(gca, 'FontSize', 18)
 set(h, 'Color', 'w');
-export_fig(h, [resultDirRep 'figures/compPerm_07-40.pdf']);
+export_fig(h, [resultDirRep 'figures/compPerm_07-40.png']);

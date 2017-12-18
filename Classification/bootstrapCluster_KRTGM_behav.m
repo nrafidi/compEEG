@@ -1,8 +1,8 @@
 %Bootstrap cluster value
-function [trueClusterT, permClusterT, bootGrid] = bootstrapCluster_KRTGM(clusterToUse, computationToPlot)
+function [trueClusterT, permClusterT, bootGrid] = bootstrapCluster_KRTGM_behav(clusterToUse, computationToPlot, behav_str)
 
 dataRootR = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/';
-load(sprintf('%s/results/clusters_pVals_KRTGM.mat', dataRootR));
+load(sprintf('%s/results/clusters_pVals_KRTGM_behav%s.mat', dataRootR, behav_str));
 numPerms = 1000;
 numSubjects = size(IndividualSubjectDataR, 1);
 
@@ -55,9 +55,7 @@ colorbar
 xlabel('KR Time (ms)');
 ylabel('Competition Time (ms)');
 title(sprintf('Proportion of Bootstrap Draws\nCluster Participation'));
-set(gca, 'FontSize', 18);
-set(f, 'Color', 'w');
-export_fig(f, sprintf('%s/results/figures/clusterBootstrapGrid.pdf', dataRootR));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrapGrid_behav%s.png', dataRootR, behav_str));
 
 f = figure;
 histogram(permClusterT);
@@ -68,9 +66,9 @@ legend({'Bootstrap Distribution', 'True Value'});
 xlabel('Cluster Summed T Stat');
 ylabel('Number of Bootstrap Draws');
 
-export_fig(f, sprintf('%s/results/figures/clusterBootstrap.png', dataRootR));
-export_fig(f, sprintf('%s/results/figures/clusterBootstrap.pdf', dataRootR));
-export_fig(f, sprintf('%s/results/figures/clusterBootstrap.fig', dataRootR));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrap_behav%s.png', dataRootR, behav_str));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrap_behav%s.pdf', dataRootR, behav_str));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrap_behav%s.fig', dataRootR, behav_str));
 end
 
 function [krTGM_R, krTGM_F, firstRoundCorr_R, firstRoundCorr_F] = collectData(IndividualSubjectDataR, IndividualSubjectDataF, ...

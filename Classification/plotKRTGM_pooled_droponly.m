@@ -26,14 +26,10 @@ IndividualSubjectDataR = cell(numOS + numRS, 1);
 IndividualSubjectDataF = cell(numOS + numRS, 1);
 IndividualSubjectFirstCorrR = cell(numOS + numRS, 1);
 IndividualSubjectFirstCorrF = cell(numOS + numRS, 1);
-num_good = 0;
-num_tot = 0;
 for i = 1:numRS
     load(sprintf(fnameString, dataRootR, repSubjects{i}, krWinString));
     
     goodItems = sum(responseTraj, 2) > 1 | sum(responseTraj(:,1:3),2) > 0;
-    num_good = num_good + sum(goodItems);
-    num_tot = num_tot + length(goodItems);
     
     for j = 1:size(responseTraj, 1)
         if goodItems(j)
@@ -62,8 +58,7 @@ for i = 1:numOS
     load(sprintf(fnameString, dataRootO, origSubjects{i}, krWinString));
     
     goodItems = sum(responseTraj, 2) > 1 | sum(responseTraj(:,1:3),2) > 0;
-    num_good = num_good + sum(goodItems);
-    num_tot = num_tot + length(goodItems);
+    
     for j = 1:size(responseTraj, 1)
         if goodItems(j)
             if krLabels(j) == 1
@@ -86,8 +81,6 @@ for i = 1:numOS
     krTGM_R = cat(1, krTGM_R, krTrajToAdd_R);%(1:numSamp,:,:,:));
     krTGM_F = cat(1, krTGM_F, krTrajToAdd_F);%(1:numSamp,:,:,:));
 end
-
-fprintf('%d/%d\n', num_good, num_tot);
 
 [~, numRounds, numKRT, numCT] = size(krTGM_R);
 
@@ -177,18 +170,17 @@ switch computationToPlot
         error('Not Implemented')
 end
 
-[~, rep_corr] = ttest(diffMatR, diffMatF, 'Tail', 'right');
+%%
+
+diffMatAll = cat(1, diffMatR, diffMatF);
+
+[~, rep_corr] = ttest(diffMatAll, 0, 'Tail', 'right');
 rep_corr = squeeze(rep_corr);
 
-[~, rep_opp] = ttest(diffMatR, diffMatF, 'Tail', 'left');
+[~, rep_opp] = ttest(diffMatAll, 0, 'Tail', 'left');
 rep_opp = squeeze(rep_opp);
 
-rep_diff = squeeze(mean(diffMatR - diffMatF, 1));
-
-
-
-% trueMax = max(max(abs(rep_diff)));
-% trueMin = min(min(rep_dir
+rep_diff = squeeze(mean(diffMatAll, 1));
 
 rep = zeros(size(rep_opp));
 rep(rep_opp < 0.05) = -1;
@@ -200,16 +192,6 @@ rep(rep_corr < 0.01) = 2;
 rep(rep_corr < 0.001) = 5;
 
 figure
-imagesc(rep)
-
-figure
-hold on
-for i = 5:10
-    plot(rep(:, i))
-end
-keyboard
-
-figure
 meow = rep_corr';
 imagesc(krWinTime, ctWinTime, meow, [0, 0.05])
 
@@ -218,149 +200,131 @@ imagesc(krWinTime, ctWinTime, meow, [0, 0.05])
 
 disp(ctWinTime(row))
 disp(krWinTime(column))
-
-
 %%
 f1 = figure;
+subplot(1, 2, 1)
 imagesc(krWinTime, ctWinTime, rep_diff');%, [0, trueMax]);
 ylabel('Competition Training Time (ms)');
 xlabel('KR Test Time (ms)');
 colorbar
 title(sprintf('Absolute Difference\nRemembered vs Forgotten'));
 set(gca, 'FontSize', 18);
-set(f1, 'Color', 'w');
-export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2.png', dataRootR, computationToPlot, krWinString));
-export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2.fig', dataRootR, computationToPlot, krWinString));
-export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2.pdf', dataRootR, computationToPlot, krWinString));
 
-f2 = figure;
+subplot(1, 2, 2)
 imagesc(krWinTime, ctWinTime, rep', [-5, 5]);
-ylabel('Competition Training Time (ms)');
-xlabel('KR Test Time (ms)');
 colorbar
 title(sprintf('P value Difference\nRemembered vs Forgotten'));
 set(gca, 'FontSize', 18);
-set(f2, 'Color', 'w');
 % h = suptitle(computationToPlot);
 % set(h, 'FontSize', 22, 'FontWeight', 'bold');
-
-% set (f1, 'Units', 'normalized', 'Position', [0,0,1,1]);
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.png', dataRootR, computationToPlot, krWinString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.fig', dataRootR, computationToPlot, krWinString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.pdf', dataRootR, computationToPlot, krWinString));
-%%
-dataToCluster = cat(4, diffMatR, diffMatF);
-% options.minClusterSize = 1;
-pValString = '1';
-% options.pValThresh = 0.05;
-% options.maxPermutations = 1000;
-% [clusters, pVals, permutationClusters, permutationHist, permutationSize] = clusterPermTestPooledSub_fullTime(dataToCluster, options);
-% save(sprintf('%s/results/clusters_pVals_histograms_KRTGM.mat', dataRootR), ...
-%     'clusters', 'pVals', 'permutationHist', 'permutationSize', ...
-%     'permutationClusters');
-% load(sprintf('%s/results/clusters_pVals_histograms_KRTGM.mat', dataRootR));
-
-[~, uniClustInd] = unique(cellfun(@num2str, ...
-    cellfun(@(x) reshape(x, 1, []), clusters, 'UniformOutput', false), ...
-    'UniformOutput', false));
-clusters = clusters(uniClustInd);
-pVals = pVals(uniClustInd,:);
-
-
-for i = 1:length(permutationClusters)
-    [~, uniClustInd] = unique(cellfun(@num2str, ...
-    cellfun(@(x) reshape(x, 1, []), permutationClusters{i}, 'UniformOutput', false), ...
-    'UniformOutput', false));
-    permutationClusters{i} = permutationClusters{i}(uniClustInd);
-end
-
-sigClust = find(pVals(:,2) < 0.05);
-sizeSigClust = size(clusters{sigClust},1);
-f = figure;
-histogram(permutationSize, 'FaceAlpha', 1);
-hold on
-line([sizeSigClust, sizeSigClust], [0, 300]);
-legend({'Permuted Cluster Sizes', 'True Max Cluster Size'});
-title('Histogram of Permuted Cluster Sizes')
-xlabel('Cluster size')
-ylabel('Number of permuted clusters')
-set(gca, 'FontSize', 18);
-set(f, 'Color', 'w');
-export_fig(f, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_sizeHist_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
+set(f1, 'Color', 'w');
+set (f1, 'Units', 'normalized', 'Position', [0,0,1,1]);
+export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_droponly.png', dataRootR, computationToPlot, krWinString));
+export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_droponly.fig', dataRootR, computationToPlot, krWinString));
+export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_droponly.pdf', dataRootR, computationToPlot, krWinString));
 
 %%
-f3 = figure;
-subplot(1,2,1)
-histogram(permutationHist);
-title('Summed t stat');
-subplot(1,2,2)
-histogram(permutationSize);
-title('Number of points');
-set(f3, 'Color', 'w');
-export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.png', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.fig', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
-%%
-f2 = figure;
-imagesc(krWinTime, ctWinTime, rep', [-5, 5]);
-colorbar
-hold on
-% colors = 'abcdrbkm';
-for i = 1:length(clusters)
-    if pVals(i,2) <= 0.05
-        scatter(krWinTime(clusters{i}(:,1)), ctWinTime(clusters{i}(:,2)), 'r');
-    end
-%     scatter(krWinTime(clusters{i}(:,1)), ctWinTime(clusters{i}(:,2)), colors(i));
-    
-end
-ylabel('Competition Training Time (ms)');
-xlabel('KR Test Time (ms)');
-title(sprintf('P value Difference\nRemembered vs Forgotten'));
-set(gca, 'FontSize', 18);
-set(f2, 'Color', 'w');
-
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.png', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.fig', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
-save(sprintf('%s/results/clusters_pVals_KRTGM.mat', dataRootR), ...
-    'clusters', 'pVals', 'IndividualSubjectDataR', 'IndividualSubjectDataF', ...
-    'krWinToUse', 'ctWinToUse', 'ctWinTime', 'krWinTime', 'IndividualSubjectFirstCorrF', ...
-    'IndividualSubjectFirstCorrR');
+% dataToCluster = cat(4, diffMatAll, diffMatF);
+% pValString = '05';
 % 
-% [trueClusterT, permClusterT, bootGrid] = bootstrapCluster_KRTGM(sigClust, computationToPlot);
-% %%
-% save(sprintf('%s/results/clusterBoot_KRTGM.mat', dataRootR), ...
-%     'trueClusterT', 'permClusterT', 'bootGrid');
+% clusterFname = sprintf('%s/results/clusters_pVals_histograms_KRTGM_droponly.mat', dataRootR);
 % 
-% f = figure;
-% imagesc(krWinTime, ctWinTime, bootGrid');
-% colorbar
-% caxis([0, 1])
-% xlabel('KR Time (ms)');
-% ylabel('Competition Time (ms)');
-% title(sprintf('Proportion of Bootstrap Draws\nCluster Participation'));
-% set(gca, 'FontSize', 18);
-% set(f, 'Color', 'w');
-% export_fig(f, sprintf('%s/results/figures/clusterBootstrapGrid.pdf', dataRootR));
-
-% numPerms = 100;
-% repForPerm = rep';
-%
-% [numRows, numCols] = size(repForPerm);
-%
-% maxBlockSize = nan(numRows, 1);
-% maxBlockSize_perm = nan(numRows, numPerms);
-% percGreater = nan(numRows, 1);
-% for i = 1:numRows
-%     blocks = findContiguousNZ(repForPerm(i,:));
-%     if ~isempty(blocks)
-%         maxBlockSize(i) = max(cellfun(@numel, blocks));
-%         for p = 1:numPerms
-%             rng(p);
-%             maxBlockSize_perm(i,p) = max(cellfun(@numel, ...
-%                 findContiguousNZ(repForPerm(i,randperm(numCols)))));
-%         end
-%         percGreater(i) = sum(maxBlockSize_perm(i,:) > maxBlockSize(i));
-%     end
+% if ~exist(clusterFname, 'file')
+%     options.minClusterSize = 1;
+%     options.pValThresh = 0.05;
+%     options.maxPermutations = 1000;
+%     [clusters, pVals, permutationClusters, permutationHist, permutationSize] = clusterPermTestPooledSub_fullTime(dataToCluster, options);
+%     save(sprintf('%s/results/clusters_pVals_histograms_KRTGM.mat', dataRootR), ...
+%         'clusters', 'pVals', 'permutationHist', 'permutationSize', ...
+%         'permutationClusters');
+% else
+%     load(clusterFname);
 % end
-
+% 
+% [~, uniClustInd] = unique(cellfun(@num2str, ...
+%     cellfun(@(x) reshape(x, 1, []), clusters, 'UniformOutput', false), ...
+%     'UniformOutput', false));
+% clusters = clusters(uniClustInd);
+% pVals = pVals(uniClustInd,:);
+% 
+% 
+% for i = 1:length(permutationClusters)
+%     [~, uniClustInd] = unique(cellfun(@num2str, ...
+%     cellfun(@(x) reshape(x, 1, []), permutationClusters{i}, 'UniformOutput', false), ...
+%     'UniformOutput', false));
+%     permutationClusters{i} = permutationClusters{i}(uniClustInd);
+% end
+% 
+% sigClust = find(pVals(:,2) < 0.05);
+% sizeSigClust = size(clusters{sigClust},1);
+% f = figure;
+% histogram(permutationSize, 'FaceAlpha', 1);
+% hold on
+% line([sizeSigClust, sizeSigClust], [0, 300]);
+% legend({'Permuted Cluster Sizes', 'True Max Cluster Size'});
+% title('Histogram of Permuted Cluster Sizes')
+% xlabel('Cluster size')
+% ylabel('Number of permuted clusters')
+% set(gca, 'FontSize', 14);
+% set(f, 'Color', 'w');
+% export_fig(f, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_sizeHist_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
+% 
+% %%
+% f3 = figure;
+% subplot(1,2,1)
+% histogram(permutationHist);
+% title('Summed t stat');
+% subplot(1,2,2)
+% histogram(permutationSize);
+% title('Number of points');
+% set(f3, 'Color', 'w');
+% export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.png', dataRootR, computationToPlot, krWinString,pValString));
+% export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.fig', dataRootR, computationToPlot, krWinString,pValString));
+% export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
+% %%
+% f2 = figure;
+% imagesc(krWinTime, ctWinTime, rep', [-5, 5]);
+% colorbar
+% hold on
+% % colors = 'abcdrbkm';
+% for i = 1:length(clusters)
+%     if pVals(i,2) <= 0.01
+%         scatter(krWinTime(clusters{i}(:,1)), ctWinTime(clusters{i}(:,2)), 'r');
+%     end
+% %     scatter(krWinTime(clusters{i}(:,1)), ctWinTime(clusters{i}(:,2)), colors(i));
+%     
+% end
+% ylabel('Competition Training Time (ms)');
+% xlabel('KR Test Time (ms)');
+% title(sprintf('P value Difference\nRemembered vs Forgotten'));
+% set(gca, 'FontSize', 14);
+% set(f2, 'Color', 'w');
+% 
+% export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.png', dataRootR, computationToPlot, krWinString,pValString));
+% export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.fig', dataRootR, computationToPlot, krWinString,pValString));
+% export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
+% save(sprintf('%s/results/clusters_pVals_KRTGM.mat', dataRootR), ...
+%     'clusters', 'pVals', 'IndividualSubjectDataR', 'IndividualSubjectDataF', ...
+%     'krWinToUse', 'ctWinToUse', 'ctWinTime', 'krWinTime', 'IndividualSubjectFirstCorrF', ...
+%     'IndividualSubjectFirstCorrR');
+% % numPerms = 100;
+% % repForPerm = rep';
+% %
+% % [numRows, numCols] = size(repForPerm);
+% %
+% % maxBlockSize = nan(numRows, 1);
+% % maxBlockSize_perm = nan(numRows, numPerms);
+% % percGreater = nan(numRows, 1);
+% % for i = 1:numRows
+% %     blocks = findContiguousNZ(repForPerm(i,:));
+% %     if ~isempty(blocks)
+% %         maxBlockSize(i) = max(cellfun(@numel, blocks));
+% %         for p = 1:numPerms
+% %             rng(p);
+% %             maxBlockSize_perm(i,p) = max(cellfun(@numel, ...
+% %                 findContiguousNZ(repForPerm(i,randperm(numCols)))));
+% %         end
+% %         percGreater(i) = sum(maxBlockSize_perm(i,:) > maxBlockSize(i));
+% %     end
+% % end
+% 

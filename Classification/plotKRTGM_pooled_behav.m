@@ -1,12 +1,21 @@
 krWinString = '';%'_krWin100';
 
+behav_pattern = [0, 1, 1, 1];
+
+if size(behav_pattern, 1) > 1
+    behav_str = num2str(reshape(behav_pattern', 1, []));
+else
+    behav_str = num2str(behav_pattern);
+end
+behav_str(isspace(behav_str)) = [];
+
 repSubjects = {'JJJ', 'III', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
     'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
     'YY'};
 
 origSubjects = {'AA', 'BB', 'DD', 'F', 'EE', 'GG', 'HH', 'JJ', ...
     'K', 'M', 'O', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z', 'N'};
-
+ 
 numRS = length(repSubjects);
 numOS = length(origSubjects);
 
@@ -26,14 +35,13 @@ IndividualSubjectDataR = cell(numOS + numRS, 1);
 IndividualSubjectDataF = cell(numOS + numRS, 1);
 IndividualSubjectFirstCorrR = cell(numOS + numRS, 1);
 IndividualSubjectFirstCorrF = cell(numOS + numRS, 1);
-num_good = 0;
-num_tot = 0;
 for i = 1:numRS
     load(sprintf(fnameString, dataRootR, repSubjects{i}, krWinString));
     
-    goodItems = sum(responseTraj, 2) > 1 | sum(responseTraj(:,1:3),2) > 0;
-    num_good = num_good + sum(goodItems);
-    num_tot = num_tot + length(goodItems);
+    goodItems = false(size(responseTraj, 1), 1);
+    for i_patt = 1:size(behav_pattern, 1)
+        goodItems = goodItems | ismember(responseTraj, behav_pattern(i_patt, :), 'rows');
+    end
     
     for j = 1:size(responseTraj, 1)
         if goodItems(j)
@@ -52,18 +60,19 @@ for i = 1:numRS
     
     IndividualSubjectDataR{i} = krTrajToAdd_R;
     IndividualSubjectDataF{i} = krTrajToAdd_F;
-%     numSamp = min([sum(krLabels == 1 & goodItems), sum(krLabels == 0 & goodItems)]);
     
-    krTGM_R = cat(1, krTGM_R, krTrajToAdd_R);%(1:numSamp,:,:,:));
-    krTGM_F = cat(1, krTGM_F, krTrajToAdd_F);%(1:numSamp,:,:,:));
+    krTGM_R = cat(1, krTGM_R, krTrajToAdd_R);
+    krTGM_F = cat(1, krTGM_F, krTrajToAdd_F);
 end
 
 for i = 1:numOS
     load(sprintf(fnameString, dataRootO, origSubjects{i}, krWinString));
     
-    goodItems = sum(responseTraj, 2) > 1 | sum(responseTraj(:,1:3),2) > 0;
-    num_good = num_good + sum(goodItems);
-    num_tot = num_tot + length(goodItems);
+    goodItems = false(size(responseTraj, 1), 1);
+    for i_patt = 1:size(behav_pattern, 1)
+        goodItems = goodItems | ismember(responseTraj, behav_pattern(i_patt, :), 'rows');
+    end
+    
     for j = 1:size(responseTraj, 1)
         if goodItems(j)
             if krLabels(j) == 1
@@ -78,7 +87,6 @@ for i = 1:numOS
     
     krTrajToAdd_R = krTraj(krLabels == 1 & goodItems,:,:,:);
     krTrajToAdd_F = krTraj(krLabels == 0 & goodItems,:,:,:);
-%     numSamp = min([sum(krLabels == 1 & goodItems), sum(krLabels == 0 & goodItems)]);
     
     IndividualSubjectDataR{i+numRS} = krTrajToAdd_R;
     IndividualSubjectDataF{i+numRS} = krTrajToAdd_F;
@@ -86,8 +94,6 @@ for i = 1:numOS
     krTGM_R = cat(1, krTGM_R, krTrajToAdd_R);%(1:numSamp,:,:,:));
     krTGM_F = cat(1, krTGM_F, krTrajToAdd_F);%(1:numSamp,:,:,:));
 end
-
-fprintf('%d/%d\n', num_good, num_tot);
 
 [~, numRounds, numKRT, numCT] = size(krTGM_R);
 
@@ -108,7 +114,7 @@ fprintf('%d/%d\n', num_good, num_tot);
 ctWinToUse = 9:38;
 ctWinTime = -100:20:950;
 ctWinTime = ctWinTime(ctWinToUse);
-krWinToUse = 6:54;%6:40;
+krWinToUse = 6:54;
 krWinTime = winTime(krWinToUse);
 if isempty(krWinString)
     krTGM_F = krTGM_F(:,:,krWinToUse, ctWinToUse);
@@ -185,11 +191,6 @@ rep_opp = squeeze(rep_opp);
 
 rep_diff = squeeze(mean(diffMatR - diffMatF, 1));
 
-
-
-% trueMax = max(max(abs(rep_diff)));
-% trueMin = min(min(rep_dir
-
 rep = zeros(size(rep_opp));
 rep(rep_opp < 0.05) = -1;
 rep(rep_opp < 0.01) = -2;
@@ -200,22 +201,13 @@ rep(rep_corr < 0.01) = 2;
 rep(rep_corr < 0.001) = 5;
 
 figure
-imagesc(rep)
-
-figure
-hold on
-for i = 5:10
-    plot(rep(:, i))
-end
-keyboard
-
-figure
 meow = rep_corr';
 imagesc(krWinTime, ctWinTime, meow, [0, 0.05])
 
 [minval, minind] = min(meow(:));
 [row, column] = ind2sub(size(meow), minind);
-
+disp(row)
+disp(column)
 disp(ctWinTime(row))
 disp(krWinTime(column))
 
@@ -229,36 +221,44 @@ colorbar
 title(sprintf('Absolute Difference\nRemembered vs Forgotten'));
 set(gca, 'FontSize', 18);
 set(f1, 'Color', 'w');
-export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2.png', dataRootR, computationToPlot, krWinString));
-export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2.fig', dataRootR, computationToPlot, krWinString));
-export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2.pdf', dataRootR, computationToPlot, krWinString));
+export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2_behav%s.png', dataRootR, computationToPlot, krWinString, behav_str));
+export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2_behav%s.fig', dataRootR, computationToPlot, krWinString, behav_str));
+export_fig(f1, sprintf('%s/results/figures/KR_TGM_%s_v_abs_pooled%s_v2_behav%s.pdf', dataRootR, computationToPlot, krWinString, behav_str));
 
 f2 = figure;
 imagesc(krWinTime, ctWinTime, rep', [-5, 5]);
 ylabel('Competition Training Time (ms)');
 xlabel('KR Test Time (ms)');
 colorbar
-title(sprintf('P value Difference\nRemembered vs Forgotten'));
+title(sprintf('P value Difference\n%s Trials', behav_str));
 set(gca, 'FontSize', 18);
 set(f2, 'Color', 'w');
 % h = suptitle(computationToPlot);
 % set(h, 'FontSize', 22, 'FontWeight', 'bold');
 
 % set (f1, 'Units', 'normalized', 'Position', [0,0,1,1]);
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.png', dataRootR, computationToPlot, krWinString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.fig', dataRootR, computationToPlot, krWinString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.pdf', dataRootR, computationToPlot, krWinString));
+export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_behav%s.png', dataRootR, computationToPlot, krWinString, behav_str));
+export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_behav%s.fig', dataRootR, computationToPlot, krWinString, behav_str));
+export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_behav%s.pdf', dataRootR, computationToPlot, krWinString, behav_str));
+keyboard
 %%
+
+cluster_fname = sprintf('%s/results/clusters_pVals_histograms_KRTGM_behav%s.mat', dataRootR, behav_str);
+
 dataToCluster = cat(4, diffMatR, diffMatF);
-% options.minClusterSize = 1;
-pValString = '1';
-% options.pValThresh = 0.05;
-% options.maxPermutations = 1000;
-% [clusters, pVals, permutationClusters, permutationHist, permutationSize] = clusterPermTestPooledSub_fullTime(dataToCluster, options);
-% save(sprintf('%s/results/clusters_pVals_histograms_KRTGM.mat', dataRootR), ...
-%     'clusters', 'pVals', 'permutationHist', 'permutationSize', ...
-%     'permutationClusters');
-% load(sprintf('%s/results/clusters_pVals_histograms_KRTGM.mat', dataRootR));
+pValString = '05';
+
+if ~exist(cluster_fname, 'file')
+    options.minClusterSize = 1;
+    options.pValThresh = 0.05;
+    options.maxPermutations = 1000;
+    [clusters, pVals, permutationClusters, permutationHist, permutationSize] = clusterPermTestPooledSub_fullTime(dataToCluster, options);
+    save(cluster_fname, ...
+        'clusters', 'pVals', 'permutationHist', 'permutationSize', ...
+        'permutationClusters');
+else
+    load(cluster_fname);
+end
 
 [~, uniClustInd] = unique(cellfun(@num2str, ...
     cellfun(@(x) reshape(x, 1, []), clusters, 'UniformOutput', false), ...
@@ -273,20 +273,20 @@ for i = 1:length(permutationClusters)
     'UniformOutput', false));
     permutationClusters{i} = permutationClusters{i}(uniClustInd);
 end
-
-sigClust = find(pVals(:,2) < 0.05);
-sizeSigClust = size(clusters{sigClust},1);
+%%
+[~, bestClust] = min(pVals(:, 2));
+sizeBestClust = size(clusters{bestClust},1);
 f = figure;
 histogram(permutationSize, 'FaceAlpha', 1);
 hold on
-line([sizeSigClust, sizeSigClust], [0, 300]);
+line([sizeBestClust, sizeBestClust], [0, 300]);
 legend({'Permuted Cluster Sizes', 'True Max Cluster Size'});
 title('Histogram of Permuted Cluster Sizes')
 xlabel('Cluster size')
 ylabel('Number of permuted clusters')
-set(gca, 'FontSize', 18);
+set(gca, 'FontSize', 14);
 set(f, 'Color', 'w');
-export_fig(f, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_sizeHist_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
+export_fig(f, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_sizeHist_noSizeThresh_p%s_rightTail_behav%s.pdf', dataRootR, computationToPlot, krWinString, pValString, behav_str));
 
 %%
 f3 = figure;
@@ -297,70 +297,38 @@ subplot(1,2,2)
 histogram(permutationSize);
 title('Number of points');
 set(f3, 'Color', 'w');
-export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.png', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.fig', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
+export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail_behav%s.png', dataRootR, computationToPlot, krWinString,pValString, behav_str));
+export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail_behav%s.fig', dataRootR, computationToPlot, krWinString,pValString, behav_str));
+export_fig(f3, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_permHist_noSizeThresh_p%s_rightTail_behav%s.pdf', dataRootR, computationToPlot, krWinString,pValString, behav_str));
 %%
 f2 = figure;
 imagesc(krWinTime, ctWinTime, rep', [-5, 5]);
 colorbar
 hold on
-% colors = 'abcdrbkm';
-for i = 1:length(clusters)
-    if pVals(i,2) <= 0.05
-        scatter(krWinTime(clusters{i}(:,1)), ctWinTime(clusters{i}(:,2)), 'r');
-    end
-%     scatter(krWinTime(clusters{i}(:,1)), ctWinTime(clusters{i}(:,2)), colors(i));
-    
-end
+% colors = 'kkm';
+% i_color=1;
+% for i = 1:length(clusters)
+%     if pVals(i,2) <= 0.05
+        disp(pVals)
+        scatter(krWinTime(clusters{bestClust}(:,1)), ctWinTime(clusters{bestClust}(:,2)), 'r');
+%         i_color = i_color+1;
+%     end
+% %     scatter(krWinTime(clusters{i}(:,1)), ctWinTime(clusters{i}(:,2)), colors(i));
+%     
+% end
 ylabel('Competition Training Time (ms)');
 xlabel('KR Test Time (ms)');
 title(sprintf('P value Difference\nRemembered vs Forgotten'));
-set(gca, 'FontSize', 18);
+set(gca, 'FontSize', 14);
 set(f2, 'Color', 'w');
 
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.png', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.fig', dataRootR, computationToPlot, krWinString,pValString));
-export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail.pdf', dataRootR, computationToPlot, krWinString,pValString));
-save(sprintf('%s/results/clusters_pVals_KRTGM.mat', dataRootR), ...
+export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail_behav%s.png', dataRootR, computationToPlot, krWinString,pValString, behav_str));
+export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail_behav%s.fig', dataRootR, computationToPlot, krWinString,pValString, behav_str));
+export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal-Cluster_pooled%s_v2_noSizeThresh_p%s_rightTail_behav%s.pdf', dataRootR, computationToPlot, krWinString,pValString, behav_str));
+save(sprintf('%s/results/clusters_pVals_KRTGM_behav%s.mat', dataRootR, behav_str), ...
     'clusters', 'pVals', 'IndividualSubjectDataR', 'IndividualSubjectDataF', ...
     'krWinToUse', 'ctWinToUse', 'ctWinTime', 'krWinTime', 'IndividualSubjectFirstCorrF', ...
     'IndividualSubjectFirstCorrR');
-% 
-% [trueClusterT, permClusterT, bootGrid] = bootstrapCluster_KRTGM(sigClust, computationToPlot);
-% %%
-% save(sprintf('%s/results/clusterBoot_KRTGM.mat', dataRootR), ...
-%     'trueClusterT', 'permClusterT', 'bootGrid');
-% 
-% f = figure;
-% imagesc(krWinTime, ctWinTime, bootGrid');
-% colorbar
-% caxis([0, 1])
-% xlabel('KR Time (ms)');
-% ylabel('Competition Time (ms)');
-% title(sprintf('Proportion of Bootstrap Draws\nCluster Participation'));
-% set(gca, 'FontSize', 18);
-% set(f, 'Color', 'w');
-% export_fig(f, sprintf('%s/results/figures/clusterBootstrapGrid.pdf', dataRootR));
+%%
 
-% numPerms = 100;
-% repForPerm = rep';
-%
-% [numRows, numCols] = size(repForPerm);
-%
-% maxBlockSize = nan(numRows, 1);
-% maxBlockSize_perm = nan(numRows, numPerms);
-% percGreater = nan(numRows, 1);
-% for i = 1:numRows
-%     blocks = findContiguousNZ(repForPerm(i,:));
-%     if ~isempty(blocks)
-%         maxBlockSize(i) = max(cellfun(@numel, blocks));
-%         for p = 1:numPerms
-%             rng(p);
-%             maxBlockSize_perm(i,p) = max(cellfun(@numel, ...
-%                 findContiguousNZ(repForPerm(i,randperm(numCols)))));
-%         end
-%         percGreater(i) = sum(maxBlockSize_perm(i,:) > maxBlockSize(i));
-%     end
-% end
-
+bootstrapCluster_KRTGM_behav(bestClust, computationToPlot, behav_str);

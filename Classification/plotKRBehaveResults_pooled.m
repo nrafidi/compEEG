@@ -15,12 +15,13 @@ resDirR = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/';
 behaveDataRootO = '/Users/nrafidi/Documents/MATLAB/compEEG-data/behavioral/';
 resDirO = '/Users/nrafidi/Documents/MATLAB/compEEG-data/results/';
 
-meanRespTraj = nan(numSub, 4);
-meanRespTrajCorr = nan(numSub, 4);
-meanRespTrajInc = nan(numSub, 4);
-meanCorr = nan(numSub, 1);
+meanRespTraj = [];
+meanRespTrajCorr = [];
+meanRespTrajInc = [];
+meanCorr = [];
 krTrajList = cell(numSub, 1);
 krLabelList = cell(numSub, 1);
+perSubCorr = nan(numSub, 1);
 configurationPerf = zeros(16,2);
 for s = 1:numSubR
     load(sprintf('%s%s/%s_answerTraj.mat', behaveDataRootR, subjectsR{s}, subjectsR{s}));
@@ -101,13 +102,14 @@ for s = 1:numSubR
         end
     end
     
-    meanRespTraj(s,:) = nanmean(responseTraj, 1);
+    meanRespTraj = cat(1, meanRespTraj, responseTraj);
     %     figure;
     %     bar(meanRespTraj(s,:));
     %     title(num2str(mean(corrAnswers)));
-    meanRespTrajCorr(s,:) = nanmean(responseTraj(corrAnswers,:), 1);
-    meanRespTrajInc(s,:) = nanmean(responseTraj(~corrAnswers,:), 1);
-    meanCorr(s) = nanmean(corrAnswers, 1);
+    meanRespTrajCorr = cat(1, meanRespTrajCorr, responseTraj(corrAnswers,:));
+    meanRespTrajInc = cat(1, meanRespTrajInc, responseTraj(~corrAnswers,:));
+    meanCorr = cat(1, meanCorr, corrAnswers);
+    perSubCorr(s) = nanmean(corrAnswers);
 end
 
 for s = 1:numSubO
@@ -190,13 +192,14 @@ for s = 1:numSubO
     end
     
     
-    meanRespTraj(s+numSubR,:) = nanmean(responseTraj, 1);
+    meanRespTraj = cat(1, meanRespTraj, responseTraj);
     %     figure;
     %     bar(meanRespTraj(s,:));
     %     title(num2str(mean(corrAnswers)));
-    meanRespTrajCorr(s+numSubR,:) = nanmean(responseTraj(corrAnswers,:), 1);
-    meanRespTrajInc(s+numSubR,:) = nanmean(responseTraj(~corrAnswers,:), 1);
-    meanCorr(s+numSubR) = nanmean(corrAnswers, 1);
+    meanRespTrajCorr = cat(1, meanRespTrajCorr, responseTraj(corrAnswers,:));
+    meanRespTrajInc = cat(1, meanRespTrajInc, responseTraj(~corrAnswers,:));
+    meanCorr = cat(1, meanCorr, corrAnswers);
+    perSubCorr(s + numSubR) = nanmean(corrAnswers);
 end
 
 %% Configuration plots
@@ -221,19 +224,19 @@ xlim([0, 17])
 set(gca, 'xtick', 1:16);
 set(gca, 'xticklabels', {'0000', '0001', '0010', '0011', '0100', '0101', ...
     '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111'});
-legend({'Forgotten', 'Remembered'});
+legend({'Session 3 Forgotten', 'Session 3 Remembered'});
 title(sprintf('Prevalence of Response Configurations During Session 2\nSplit by Session 3 Performance'));
 xlabel('Response Configuration from Session 2')
 ylabel('Number of Items')
-set(gca, 'FontSize', 16);
+set(gca, 'FontSize', 20);
 set(f, 'Color', 'w');
 set (f, 'Units', 'normalized', 'Position', [0,0,1,1]);
-export_fig(f, [resDirR 'figures/Behavioral/configPrevSplit.pdf']);
+export_fig(f, [resDirR 'figures/Behavioral/configPrevSplit.png']);
 %%
 % scatter(1:4, mean(meanRespTraj, 1));
 f1 = figure;
-totalMean = [mean(meanRespTraj, 1) mean(meanCorr)];
-totalStd = [std(meanRespTraj) std(meanCorr)];
+totalMean = [nanmean(meanRespTraj, 1) nanmean(meanCorr)];
+totalStd = [nanstd(meanRespTraj) nanstd(meanCorr)]./sqrt(sum(~isnan(meanCorr), 1));
 bar(1:5, totalMean);
 hold on
 set(gca, 'XTickLabel',{'R1', 'R2', 'R3', 'R4', 'T'});
@@ -245,14 +248,26 @@ set(gca, 'fontsize', 18);
 set(gcf, 'color', 'w');
 export_fig(f1, [resDirR 'figures/Behavioral/avgPerf_pooled.pdf']);
 
+f15 = figure;
+h = histogram(perSubCorr, 'BinEdges', 0:0.1:1);
+set(h, 'FaceAlpha', 1);
+xlabel('Average Performance in Session 3')
+ylabel('Number of Subjects')
+title(sprintf('Histogram of Individual Subject\nPerformance in Session 3'))
+set(gca, 'fontsize', 18);
+set(gcf, 'color', 'w');
+export_fig(f15, [resDirR 'figures/Behavioral/subHist_Session3.pdf']);
+
+keyboard;
+
 f2 = figure;
-corrIncMean = [mean(meanRespTrajCorr, 1);mean(meanRespTrajInc, 1)];
+corrIncMean = [nanmean(meanRespTrajInc, 1); nanmean(meanRespTrajCorr, 1)];
 bar(1:4, corrIncMean');
 hold on
 set(gca, 'XTickLabel',{'R1', 'R2', 'R3', 'R4'});
-errorbar(0.855:3.855, corrIncMean(1,:), std(meanRespTrajCorr), 'r.');
-errorbar(1.145:4.145, corrIncMean(2,:), std(meanRespTrajInc), 'k.');
-legend('Subsequently Remembered', 'Subsequently Forgotten', 'Location', 'NorthWest');
+errorbar(1.145:4.145, corrIncMean(2,:), nanstd(meanRespTrajCorr)./sqrt(size(meanRespTrajCorr(~isnan(meanRespTrajCorr(:,1)), :), 1)), 'k.');
+errorbar(0.855:3.855, corrIncMean(1,:), nanstd(meanRespTrajInc)./sqrt(size(meanRespTrajInc(~isnan(meanRespTrajInc(:,1)), :), 1)), 'r.');
+legend('Session 3 Forgotten', 'Session 3 Remembered', 'Location', 'NorthWest');
 xlabel('Round of Testing');
 ylabel('Fraction Correct');
 title(sprintf('Average Performance Across Subjects\nGrouped by Session 3 Performance'));
