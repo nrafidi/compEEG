@@ -1,15 +1,16 @@
 function [featData, labels, options, featOptions] = ...
-    preprocFreqDecomp(sub, experi, varargin)
-% preprocPipeline: a preprocessing pipeline for CompEEG and CompEEG__KR
+    preprocFreqDecomp(sub, experi, isRep, varargin)
+% preprocFreqDecomp: a preprocessing pipeline for CompEEG and CompEEG__KR
 % data. Runs a user-selected set of preprocessing procedures (set with the
 % optional struct options) and then extracts the features for use in
-% classification. Currently uses feature extraction defaults. Note that all
-% intermediate files are saved.
+% classification. Runs a Hilbert Transform and selects the given frequency
+% window (default theta band) for features.
 %
 % Inputs:
 %   sub: the subject to be processed, e.g. 'AA'
 %   experi: the experiment to be processed, either 'CompEEG' or
 %   'CompEEG__KR'
+%   isRep: is the subject from the original or the replication experiment
 %   options: (optional) sets the parameters to use when preprocessing,
 %   which include:
 %       isVis: set to true if using visually inspected data
@@ -18,7 +19,8 @@ function [featData, labels, options, featOptions] = ...
 %       N: the center of the notch filter to apply (nan if none)
 %       doRef: set to true to rereference electrodes to the group mean
 %       (recommended)
-%       runICA: compute ICA weights and subtract to remove blinks
+%       bpfind: frequency boundaries to select
+%       bpname: name of frequency band (e.g. 'theta')
 %
 % Outputs:
 %   featData: the data in the form of samples x features
@@ -30,7 +32,11 @@ clear EEG;
 eeglab;
 
 % Path to data files
-dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/';
+if isRep
+    dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/';
+else
+    dataRoot = '/Users/nrafidi/Documents/MATLAB/compEEG-data/';
+end
 % Intermediate files
 saveInterDir = [dataRoot '/preproc-partial/' sub '/'];
 % Final files
@@ -38,7 +44,7 @@ saveFname = [dataRoot '/preproc-final/' sub '/' experi '_' sub];
 % Epochs
 epochWin = [-0.3, 2];
 
-if nargin > 2
+if nargin > 3
     options = varargin{1};
 else
     options = struct;
@@ -90,15 +96,6 @@ EEG = pop_loadset('filename',[fnameRoot '.set'],'filepath', saveInterDir);
 EEG = eeg_checkset( EEG );
 runningFname = [EEG.setname];
 
-% % Load Channel Locations - currently not working
-% EEG=pop_chanedit(EEG, 'load',{[dataRoot 'electrode_locs.xyz'] 'filetype' 'xyz'},'load',{[dataRoot 'electrode_locs.xyz'] 'filetype' 'xyz'},'save',[]);
-% EEG = eeg_checkset( EEG );
-% % Plot them to make sure they're correct
-% % figure; topoplot([],EEG.chanlocs, 'style', 'blank',  'electrodes', 'labelpoint', 'chaninfo', EEG.chaninfo);
-% EEG.setname=[EEG.setname '_Locs'];
-% EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath',[dataRoot '/preproc-partial/']);
-% EEG = eeg_checkset( EEG );
-
 % Band Pass Filter
 if ~isnan(options.HP) && ~isnan(options.LP) && ...
         ~exist([saveInterDir runningFname '_BP' num2str(options.HP) '-' num2str(options.LP) '.set'], 'file');
@@ -109,9 +106,10 @@ if ~isnan(options.HP) && ~isnan(options.LP) && ...
     EEG.setname=[EEG.setname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     saveFname = [saveFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif ~isnan(options.HP) && ~isnan(options.LP)
     runningFname = [runningFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
+    saveFname = [saveFname '_BP' num2str(options.HP) '-' num2str(options.LP)];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
@@ -125,9 +123,10 @@ if ~isnan(options.N) && ...
     EEG.setname=[EEG.setname '_N' num2str(options.N)];
     saveFname = [saveFname '_N' num2str(options.N)];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif ~isnan(options.N)
     runningFname = [runningFname '_N' num2str(options.N)];
+    saveFname = [saveFname '_N' num2str(options.N)];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
@@ -140,9 +139,10 @@ if options.doRef && ~exist([saveInterDir runningFname '_Ref.set'], 'file')
     EEG.setname=[EEG.setname '_Ref'];
     saveFname = [saveFname '_Ref'];
     EEG = eeg_checkset( EEG );
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 elseif options.doRef
     runningFname = [runningFname '_Ref'];
+    saveFname = [saveFname '_Ref'];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
@@ -153,7 +153,7 @@ if ~any(isnan(options.bpFind))
     EEG.data = squeeze(hilpow);
     EEG.setname=[EEG.setname '_Hilbert-' options.bpName];
     saveFname = [saveFname '_Hilbert-' options.bpName];
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 end
 
 % Parse into Epochs and remove Baseline
@@ -163,24 +163,21 @@ if ~exist([saveInterDir runningFname '_Epochs.set'], 'file')
     EEG.setname=[EEG.setname '_Epochs'];
     saveFname = [saveFname '_Epochs'];
     oldSetName = EEG.setname;
-    EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
+%     EEG = pop_saveset( EEG, 'filename',[EEG.setname '.set'],'filepath', saveInterDir);
 else
     runningFname = [runningFname '_Epochs'];
+    saveFname = [saveFname '_Epochs'];
     EEG = pop_loadset('filename',[runningFname '.set'],'filepath', saveInterDir);
 end
 
 % Create .mat file
 
 if strcmp(experi, 'CompEEG')
-%     if sub < 'F'
-%         [data, labels, time] = getDataLabels_pilot(EEG); %#ok<*ASGLU>
-%     else
-        [data, labels, time] = getDataLabels_Comp(EEG);
-%     end
+    [data, labels, time] = getDataLabels_Comp(EEG); %#ok<*ASGLU>
 else
-    [data, labels, time] = getDataLabels_KR(EEG);
+    [data, labels, time] = getDataLabels_KR(sub, EEG);
 end
-%
+%%
 figure;
 bar(labels(:,1));
 title(sprintf('%s = %d\n', sub, sum(labels(:,1) == 1)));
@@ -191,8 +188,8 @@ save([saveFname '.mat'], 'data', 'labels', 'time', 'preProcOptions');
 
 % Extract Relevant Features
 
-[featData, labels, featOptions] = extractFeatures([saveFname '.mat']);
+[featData, labels, winTime, featOptions] = extractFeatures([saveFname '.mat']);
 
-save([saveFname '_Features.mat'], 'featData', 'labels', 'featOptions');
+save([saveFname '_Features_Overlap_Time.mat'], 'featData', 'labels', 'winTime', 'featOptions');
 
 end

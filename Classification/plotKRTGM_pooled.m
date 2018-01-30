@@ -207,7 +207,7 @@ hold on
 for i = 5:10
     plot(rep(:, i))
 end
-keyboard
+% keyboard
 
 figure
 meow = rep_corr';
@@ -249,16 +249,21 @@ export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.png', da
 export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.fig', dataRootR, computationToPlot, krWinString));
 export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2.pdf', dataRootR, computationToPlot, krWinString));
 %%
-dataToCluster = cat(4, diffMatR, diffMatF);
-% options.minClusterSize = 1;
 pValString = '1';
-% options.pValThresh = 0.05;
-% options.maxPermutations = 1000;
-% [clusters, pVals, permutationClusters, permutationHist, permutationSize] = clusterPermTestPooledSub_fullTime(dataToCluster, options);
-% save(sprintf('%s/results/clusters_pVals_histograms_KRTGM.mat', dataRootR), ...
-%     'clusters', 'pVals', 'permutationHist', 'permutationSize', ...
-%     'permutationClusters');
-% load(sprintf('%s/results/clusters_pVals_histograms_KRTGM.mat', dataRootR));
+options.pValThresh = 0.1;
+dataToCluster = cat(4, diffMatR, diffMatF);
+clusterfile = sprintf('%s/results/clusters_pVals_histograms_KRTGM_thresh%0.2f.mat', dataRootR, options.pValThresh);
+
+if exist(clusterfile, 'file')
+    load(clusterfile)
+else
+    options.minClusterSize = 1;
+    options.maxPermutations = 1000;
+    [clusters, pVals, permutationClusters, permutationHist, permutationSize] = clusterPermTestPooledSub_fullTime(dataToCluster, options);
+    save(clusterfile, ...
+        'clusters', 'pVals', 'permutationHist', 'permutationSize', ...
+        'permutationClusters');
+end
 
 [~, uniClustInd] = unique(cellfun(@num2str, ...
     cellfun(@(x) reshape(x, 1, []), clusters, 'UniformOutput', false), ...
@@ -274,7 +279,7 @@ for i = 1:length(permutationClusters)
     permutationClusters{i} = permutationClusters{i}(uniClustInd);
 end
 
-sigClust = find(pVals(:,2) < 0.05);
+sigClust = find(pVals(:,2) < 0.05, 1, 'first');
 sizeSigClust = size(clusters{sigClust},1);
 f = figure;
 histogram(permutationSize, 'FaceAlpha', 1);

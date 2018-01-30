@@ -1,4 +1,4 @@
-% Paths
+%% Paths
 isRepExp = true;
 addpath ../Preprocessing/
 
@@ -10,8 +10,9 @@ end
 
 behaveDataRoot = [dataRoot 'behavioral/'];
 fPrefix = [dataRoot 'preproc-final/'];
-
-% Parameters
+fSuffixString = '%s_BP2-%d_N60_Ref_Epochs_Base_ICA1-2.mat';
+KRanswer = importdata('/Users/nrafidi/Documents/MATLAB/compEEG-stim/KR_answer.txt');
+%% Parameters
 if isRepExp
     subjects = {'JJJ', 'III', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
         'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
@@ -25,11 +26,10 @@ end
 numSub = length(subjects);
 compWinToUse = 15:35;
 numCompWin = length(compWinToUse);
-fSuffixString = '%s_BP2-%d_N60_Ref_Epochs_Base_ICA1-2.mat';
-KRanswer = importdata('/Users/nrafidi/Documents/MATLAB/compEEG-stim/KR_answer.txt');
 
-krWinSize = [100, 200, 300];
+krWinSize = [50, 100];
 
+%%
 for krWin = krWinSize
     for s = 1:numSub
         sub = subjects{s};
@@ -99,14 +99,12 @@ for krWin = krWinSize
         numPotTraj = size(responseTraj, 1);
         newResponseTraj = [];
         responseTraj(isnan(responseTraj)) = 0; %#ok<*SAGROW>
-        %~any(isnan(responseTraj(iPTraj,:))) &&
         for iPTraj = 1:numPotTraj
             if ~any(iPTraj == skippedItems);
                 newResponseTraj = cat(1, newResponseTraj, responseTraj(iPTraj,:));
             end
         end
         responseTraj = newResponseTraj;
-        %     keyboard;
         save(fname, 'krTraj', 'krLabels', 'skippedItems', 'responseTraj', 'winTime');
         
     end

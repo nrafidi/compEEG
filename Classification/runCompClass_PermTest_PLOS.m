@@ -26,14 +26,14 @@ if isRepExp
 else
     fPrefix = '/Users/nrafidi/Documents/MATLAB/compEEG-data/preproc-final/';
 end
-fSuffix = '_Vis_BP2-%d_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat';
+fSuffix = '_Vis_BP2-%d_N60_Ref_Hilbert-theta_Epochs_Features_Overlap_Time.mat';
 numFolds = 5;
 trueSubAccs = nan(numSub, numFolds);
 permSubAccs = nan(numSub, numPerm, numFolds);
 
 load comp5Fseed.mat
 %%
-for winToUse = [1:6, 41:54]
+for winToUse = 7:40 %[1:6, 41:54]
     for s = 1:length(subjects)
         sub = subjects{s};
         
@@ -46,7 +46,7 @@ for winToUse = [1:6, 41:54]
             mkdir(resultDir);
         end
         
-        resultFname = [resultDir '/CompEEG_5FCV_win' num2str(winToUse) '_permAccs.mat'];
+        resultFname = [resultDir '/CompEEG_5FCV_win' num2str(winToUse) '_permAccs' num2str(numPerm) '_theta.mat'];
         if exist(resultFname, 'file');
             load(resultFname);
             trueSubAccs(s,:) = trueAcc;
@@ -108,10 +108,10 @@ for winToUse = [1:6, 41:54]
                     trueSubAccs(s, f) = sum(Yhat == Y(testInds))/length(Yhat);
                 end
             end
-            %         h = waitbar(0, sub);
+%             h = waitbar(0, sub);
             tic
             for p = 1:numPerm
-                %             waitbar(p/numPerm, h);
+%                 waitbar(p/numPerm, h);
                 %Now for the permutation
                 rng('shuffle');
                 Y = Y(randperm(N));
@@ -144,16 +144,17 @@ for winToUse = [1:6, 41:54]
             fprintf('Subject %s succeeded.\n', sub);
             
             toc
+%             close(h)
         end
-        %     close(h)
+        
     end
     if isRepExp
         save(['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/CompEEG_5FCV_win' ...
-            num2str(winToUse) '_permAccs.mat'],...
+            num2str(winToUse) '_permAccs' num2str(numPerm) '_theta.mat'],...
             'trueSubAccs', 'permSubAccs', 'winTime');
     else
         save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_5FCV_win' ...
-            num2str(winToUse) '_permAccs.mat'],...
+            num2str(winToUse) '_permAccs' num2str(numPerm) '_theta.mat'],...
             'trueSubAccs', 'permSubAccs', 'winTime');
     end
 end

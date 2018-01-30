@@ -1,5 +1,5 @@
 %%
-threshold = 0.05/55;
+threshold = 0.05;
 resultDir = '/Users/nrafidi/Documents/MATLAB/compEEG-data%s/results/';
 addpath /Users/nrafidi/Documents/MATLAB/Toolboxes/export_fig/
 
@@ -52,6 +52,7 @@ for f = 1:numFiles
     subPvals = (sum_perms_greater + 1)/100;
     subProbs = norminv(subPvals-eps, 0, 1);
     [~, pVals(f)] = ttest(subProbs); 
+%     keyboard
 end
 
 numSub = size(trueSubAccs, 1);
@@ -68,6 +69,8 @@ hold on
 fh = fill(X, Y, 'c');
 set(fh, 'EdgeAlpha', 0);
 plot(timeToPlot, erpSubAvg, 'b');
+threshold = threshold/length(timeToPlot);
+disp(threshold)
 for f = 1:(numFiles-1)
     if pVals(f) <= threshold
         scatter(timeToPlot(f), trueAccs(f)+0.005, 'r*');

@@ -1,6 +1,6 @@
 krWinString = '';%'_krWin100';
 
-behav_pattern = [0, 1, 1, 1];
+behav_pattern = [0, 0, 1, 1];
 
 if size(behav_pattern, 1) > 1
     behav_str = num2str(reshape(behav_pattern', 1, []));
@@ -240,17 +240,17 @@ set(f2, 'Color', 'w');
 export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_behav%s.png', dataRootR, computationToPlot, krWinString, behav_str));
 export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_behav%s.fig', dataRootR, computationToPlot, krWinString, behav_str));
 export_fig(f2, sprintf('%s/results/figures/KR_TGM_%s_v_PVal_pooled%s_v2_behav%s.pdf', dataRootR, computationToPlot, krWinString, behav_str));
-keyboard
+% keyboard
 %%
-
-cluster_fname = sprintf('%s/results/clusters_pVals_histograms_KRTGM_behav%s.mat', dataRootR, behav_str);
+options.pValThresh = 0.1;
+pValString = '1';
+cluster_fname = sprintf('%s/results/clusters_pVals_histograms_KRTGM_behav%s_thresh%0.2f.mat', dataRootR, behav_str, options.pValThresh);
 
 dataToCluster = cat(4, diffMatR, diffMatF);
-pValString = '05';
+
 
 if ~exist(cluster_fname, 'file')
     options.minClusterSize = 1;
-    options.pValThresh = 0.05;
     options.maxPermutations = 1000;
     [clusters, pVals, permutationClusters, permutationHist, permutationSize] = clusterPermTestPooledSub_fullTime(dataToCluster, options);
     save(cluster_fname, ...

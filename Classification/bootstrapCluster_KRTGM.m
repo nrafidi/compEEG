@@ -1,11 +1,13 @@
 %Bootstrap cluster value
-function [trueClusterT, permClusterT, bootGrid] = bootstrapCluster_KRTGM(clusterToUse, computationToPlot)
+function [trueClusterT, permClusterT, bootGrid] = bootstrapCluster_KRTGM(clusterToUse, computationToPlot, pValThresh)
 
 dataRootR = '/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/';
 load(sprintf('%s/results/clusters_pVals_KRTGM.mat', dataRootR));
 numPerms = 1000;
 numSubjects = size(IndividualSubjectDataR, 1);
-
+options.minClusterSize = 1;
+options.pValThresh = pValThresh;
+options.clusterTestStatistic = 'summed_t_values';
 % True Cluster Size
 [krTGM_R, krTGM_F, firstRoundCorr_R, firstRoundCorr_F] = collectData(IndividualSubjectDataR, IndividualSubjectDataF, ...
     IndividualSubjectFirstCorrR, IndividualSubjectFirstCorrF, krWinToUse, ctWinToUse);
@@ -27,9 +29,7 @@ for p = 1:numPerms
 
     [permClusterT(p), diffMatR, diffMatF] = scoreCluster(krTGM_R, krTGM_F, firstRoundCorr_R, firstRoundCorr_F, clusters{clusterToUse}, computationToPlot);
     
-    options.minClusterSize = 1;
-    options.pValThresh = 0.05;
-    options.clusterTestStatistic = 'summed_t_values';
+    
     dataToCluster = cat(4, diffMatR, diffMatF);
     clustersBoot = findClusters(dataToCluster, options);
     [~, uniClustInd] = unique(cellfun(@num2str, ...
@@ -57,7 +57,7 @@ ylabel('Competition Time (ms)');
 title(sprintf('Proportion of Bootstrap Draws\nCluster Participation'));
 set(gca, 'FontSize', 18);
 set(f, 'Color', 'w');
-export_fig(f, sprintf('%s/results/figures/clusterBootstrapGrid.pdf', dataRootR));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrapGrid_%0.2f.pdf', dataRootR, pValThresh));
 
 f = figure;
 histogram(permClusterT);
@@ -68,9 +68,9 @@ legend({'Bootstrap Distribution', 'True Value'});
 xlabel('Cluster Summed T Stat');
 ylabel('Number of Bootstrap Draws');
 
-export_fig(f, sprintf('%s/results/figures/clusterBootstrap.png', dataRootR));
-export_fig(f, sprintf('%s/results/figures/clusterBootstrap.pdf', dataRootR));
-export_fig(f, sprintf('%s/results/figures/clusterBootstrap.fig', dataRootR));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrap_%0.2f.png', dataRootR, pValThresh));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrap_%0.2f.pdf', dataRootR, pValThresh));
+export_fig(f, sprintf('%s/results/figures/clusterBootstrap_%0.2f.fig', dataRootR, pValThresh));
 end
 
 function [krTGM_R, krTGM_F, firstRoundCorr_R, firstRoundCorr_F] = collectData(IndividualSubjectDataR, IndividualSubjectDataF, ...
