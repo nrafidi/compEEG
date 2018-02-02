@@ -9,7 +9,7 @@ resultDirRep = sprintf(resultDir, '-rep');
 resultDir = sprintf(resultDir, '');
 
 
-fileString = 'CompEEG_5FCV_win*_permAccs.mat';
+fileString = 'CompEEG_5FCV_win*_permAccs_theta.mat';
 
 
 filesRep = dir([resultDirRep fileString]);
@@ -95,4 +95,4 @@ ylabel('Accuracy');
 title(sprintf('Competition Accuracy Over Time'));
 set(gca, 'FontSize', 18)
 set(h, 'Color', 'w');
-export_fig(h, [resultDirRep 'figures/compPerm_07-40.png']);
+export_fig(h, [resultDirRep 'figures/compPerm_01-40_theta.png']);

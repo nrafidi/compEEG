@@ -7,8 +7,8 @@ addpath ./logisticRegression/
 addpath ../Preprocessing/
 
 if isRepExp
-    subjects = {'III', 'JJJ', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
-        'OO', 'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
+    subjects = {'OO', 'III', 'JJJ', 'KKK', 'BBB', 'GGG', 'HHH', 'AAA', 'CCC', 'DDD', 'EEE', 'FFF', 'MM', ...
+        'PP', 'QQ', 'RR', 'SS', 'TT', 'WW',...
         'YY'};
 else
     subjects =  {'L', 'P', 'W', 'CC', 'FF', 'H', 'I', 'J', ...
@@ -33,7 +33,7 @@ permSubAccs = nan(numSub, numPerm, numFolds);
 
 load comp5Fseed.mat
 %%
-for winToUse = 7:40 %[1:6, 41:54]
+for winToUse = 1:40 %[1:6, 41:54]
     for s = 1:length(subjects)
         sub = subjects{s};
         
@@ -46,7 +46,7 @@ for winToUse = 7:40 %[1:6, 41:54]
             mkdir(resultDir);
         end
         
-        resultFname = [resultDir '/CompEEG_5FCV_win' num2str(winToUse) '_permAccs' num2str(numPerm) '_theta.mat'];
+        resultFname = [resultDir '/CompEEG_5FCV_win' num2str(winToUse) '_permAccs.mat'];
         if exist(resultFname, 'file');
             load(resultFname);
             trueSubAccs(s,:) = trueAcc;
@@ -150,11 +150,11 @@ for winToUse = 7:40 %[1:6, 41:54]
     end
     if isRepExp
         save(['/Users/nrafidi/Documents/MATLAB/compEEG-data-rep/results/CompEEG_5FCV_win' ...
-            num2str(winToUse) '_permAccs' num2str(numPerm) '_theta.mat'],...
+            num2str(winToUse) '_permAccs.mat'],...
             'trueSubAccs', 'permSubAccs', 'winTime');
     else
         save(['/Users/nrafidi/Documents/MATLAB/compEEG-data/results/CompEEG_5FCV_win' ...
-            num2str(winToUse) '_permAccs' num2str(numPerm) '_theta.mat'],...
+            num2str(winToUse) '_permAccs.mat'],...
             'trueSubAccs', 'permSubAccs', 'winTime');
     end
 end
