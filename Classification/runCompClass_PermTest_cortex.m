@@ -5,8 +5,9 @@ function runCompClass_PermTest_cortex(sub, winToUse)
 
 addpath ~/compEEG/Classification/logisticRegression/
 
-loadFname = sprintf('~/CompEEG/Data/CompEEG_%s_Vis_BP2-200_N60_Ref_Hilbert-theta_Epochs_Features_Overlap_Time.mat', sub);
-resultFname = sprintf('~/CompEEG/Results/CompEEG_%s_5FCV_win%d_permAccs100_theta.mat', sub, winToUse);
+% loadFname = sprintf('~/CompEEG/Data/CompEEG_%s_Vis_BP2-200_N60_Ref_Hilbert-theta_Epochs_Features_Overlap_Time.mat', sub);
+loadFname = sprintf('~/CompEEG/Data/CompEEG_%s_Vis_BP2-200_N60_Ref_Epochs_Base_ICA1-2_Features_Overlap_Time.mat', sub);
+resultFname = sprintf('~/CompEEG/Results/CompEEG_%s_5FCV_win%d_permAccs100.mat', sub, winToUse);
 numPerm = 100;
 doZ = 1;
 numFolds = 5;
