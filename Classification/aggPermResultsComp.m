@@ -16,14 +16,14 @@ resultDirRep = sprintf(resultDir, '-rep');
 
 resultDir = sprintf(resultDir, '');
 
-loadFileString_A = '%s/CompEEG_5FCV_win%d_permAccs100_theta.mat';
-loadFileString_B = 'CompEEG_%s_5FCV_win%d_permAccs100_theta.mat';
-saveFileString = 'CompEEG_5FCV_win%d_permAccs_theta.mat';
+loadFileString_A = '%s/CompEEG_5FCV_win%d_permAccs100.mat';
+loadFileString_B = 'CompEEG_%s_5FCV_win%d_permAccs100.mat';
+saveFileString = 'CompEEG_5FCV_win%d_permAccs.mat';
 
 %%
 trueSubAccs = nan(length(repSubjects), 5);
 permSubAccs = nan(length(repSubjects), 100, 5);
-for w = 1:54
+for w = [1:6, 41:54]
     for s = 1:length(repSubjects)
         sub = repSubjects{s};
         if strcmp(sub, 'OO') && w == 32
@@ -41,7 +41,7 @@ end
 %%
 trueSubAccs = nan(length(subjects), 5);
 permSubAccs = nan(length(subjects), 100, 5);
-for w = 1:54
+for w = [1:6, 41:54]
     for s = 1:length(subjects)
         sub = subjects{s};
         if w > 6 && w < 26

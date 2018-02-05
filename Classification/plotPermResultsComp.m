@@ -54,7 +54,7 @@ for f = 1:numFiles
     [~, pVals(f)] = ttest(subProbs); 
 %     keyboard
 end
-
+% keyboard;
 numSub = size(trueSubAccs, 1);
 
 erpSubAvg = nanmean(trueSubAccsPooled);
@@ -95,4 +95,4 @@ ylabel('Accuracy');
 title(sprintf('Competition Accuracy Over Time'));
 set(gca, 'FontSize', 18)
 set(h, 'Color', 'w');
-export_fig(h, [resultDirRep 'figures/compPerm_07-40.png']);
+export_fig(h, [resultDirRep 'figures/compPerm.png']);

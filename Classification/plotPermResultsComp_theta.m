@@ -95,4 +95,4 @@ ylabel('Accuracy');
 title(sprintf('Competition Accuracy Over Time'));
 set(gca, 'FontSize', 18)
 set(h, 'Color', 'w');
-export_fig(h, [resultDirRep 'figures/compPerm_01-40_theta.png']);
+export_fig(h, [resultDirRep 'figures/compPerm_theta.png']);
