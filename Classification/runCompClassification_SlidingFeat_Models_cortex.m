@@ -10,7 +10,7 @@ doZ = 1;
 fSuffix = '_Vis_BP2-200_N60_Ref_Hilbert-theta_Epochs_Features_Overlap_Time.mat';
 
 models = cell(numFeatWins);
-loadFname = [fPrefix sub '/CompEEG_' sub fSuffix];
+loadFname = [fPrefix '/CompEEG_' sub fSuffix];
 if ~exist(loadFname, 'file')
     fprintf('Subject %s failed.\n', sub);
 else
@@ -37,12 +37,8 @@ else
         models{p} = B;
         
     end
-    if ~exist([resDir sub '/'], 'dir')
-        mkdir([resDir sub '/']);
-    end
+    save([resDir 'CompEEG_' sub '_CV_Slide_Models_PLOS_theta.mat'],...
+    'models');
 end
 
-
-save([resDir 'CompEEG_' sub '_CV_Slide_Models_PLOS_theta.mat'],...
-    'models');
 end
