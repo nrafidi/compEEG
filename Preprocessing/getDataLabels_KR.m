@@ -29,7 +29,7 @@ end
 %AA = false, BB = false, DD = true, EE = true, F = true, GG = false,
 %HH = true, JJ = true, K = true, M = true, N = true, O = true, R = true,
 %S = true, T = true, U = true, V = true, X = true, Y = true, Z = true
-switchedSubs = {'AA', 'BB', 'GG',  'TT', 'GGG', 'HHH', 'YY', 'WW'};
+switchedSubs = {'AA', 'BB', 'GG',  'TT', 'GGG', 'YY', 'WW'}; %HHH depends on isVis
 if ismember(sub, switchedSubs)
     oddblock = false;
 else

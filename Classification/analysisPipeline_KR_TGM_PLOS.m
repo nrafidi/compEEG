@@ -38,6 +38,7 @@ for krWin = krWinSize
         if strcmp(sub, 'NN')
             fSuffix = sprintf(fSuffixString, '_Vis', 127);
         elseif strcmp(sub, 'HHH')
+            break
             fSuffix = sprintf(fSuffixString, '', 200);
         else
             fSuffix = sprintf(fSuffixString, '_Vis', 200);
@@ -45,7 +46,7 @@ for krWin = krWinSize
         
         loadFname = [fPrefix sub '/CompEEG__KR_' sub fSuffix];
         fname = [dataRoot 'results/' ...
-            sub '/KRanalysis_TGM_Vis_krWin' num2str(krWin) '.mat'];
+            sub '/KRanalysis_TGM_Vis.mat'];
         
         krTraj = [];
         krLabels = [];

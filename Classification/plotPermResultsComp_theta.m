@@ -14,7 +14,7 @@ fileString = 'CompEEG_5FCV_win*_permAccs_theta.mat';
 
 filesRep = dir([resultDirRep fileString]);
 files = dir([resultDir fileString]);
-
+winTime = -100:20:960;
 
 %%
 numFilesOrig = length(files);
@@ -66,7 +66,7 @@ erpSubAvg = erpSubAvg(sortInds);
 erpSubStd = erpSubStd(sortInds);
 pVals = pVals(sortInds);
 trueAccs = trueAccs(sortInds);
-
+keyboard;
 
 subUpp = erpSubAvg + erpSubStd;
 subLow = erpSubAvg - erpSubStd;
